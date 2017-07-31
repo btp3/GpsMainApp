@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.developer.iron_man.gpsmain.Activities.MainActivity;
 import com.developer.iron_man.gpsmain.R;
 
 import java.util.ArrayList;
@@ -57,15 +56,15 @@ public class HomeFragment extends Fragment {
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         tabTwo = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
-        tabTwo.setText("Two");
+        tabTwo.setText("Scan");
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
         tabThree = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
-        tabThree.setText("Three");
+        tabThree.setText("History");
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         tabfour = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
-        tabfour.setText("Four");
+        tabfour.setText("Profile");
         tabLayout.getTabAt(3).setCustomView(tabfour);
     }
 
@@ -74,9 +73,9 @@ public class HomeFragment extends Fragment {
         //filling the adapter with fragments
        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new MapFragment(), "Map");
-        adapter.addFrag(new FragmentTwo(), "Two");
+        adapter.addFrag(new QRScanFragment(), "Two");
         adapter.addFrag(new FragmentThree(), "Three");
-        adapter.addFrag(new FragmentFour(), "Four");
+        adapter.addFrag(new ProfileFragment(), "Four");
         viewPager.setAdapter(adapter);
     }
 
