@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment {
        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new MapFragment(), "Map");
         adapter.addFrag(new QRScanFragment(), "Two");
-        adapter.addFrag(new FragmentThree(), "Three");
+        adapter.addFrag(new HistoryFragment(), "Three");
         adapter.addFrag(new ProfileFragment(), "Four");
         viewPager.setAdapter(adapter);
     }

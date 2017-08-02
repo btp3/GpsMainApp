@@ -19,7 +19,6 @@
                 android:layout_height="250dp"
                 android:background="#fff">
 
-
                 <!-- Cover Image -->
 
                 <ImageView
@@ -27,7 +26,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/banner1" />
+                    android:src="@drawable/bg" />
 
                 <!-- Round image -->
 
@@ -35,7 +34,7 @@
                     android:id="@+id/banar1"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:src="@drawable/pro"
+                    android:src="@drawable/sagar"
                     android:layout_marginTop="75dp"
                     android:layout_gravity="center" />
 
@@ -51,7 +50,7 @@
                 <com.developer.iron_man.gpsmain.Others.MyTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tom Cruise"
+                    android:text="Sagar Sharma"
                     android:textSize="22dp"
                     android:textColor="@color/black"
                     android:layout_gravity="center"/>
@@ -59,7 +58,7 @@
                 <com.developer.iron_man.gpsmain.Others.MyTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Syracuse, New York"
+                    android:text="Gwalior,Madhya Pradesh"
                     android:layout_gravity="center"
                     android:textColor="@color/black"
                     android:textSize="14dp"/>
