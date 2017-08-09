@@ -44,6 +44,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        1
+        <service android:name=".Services.GpsService" />
+
     </application>
 
 </manifest>

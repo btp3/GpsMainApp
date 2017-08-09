@@ -3,6 +3,8 @@ package com.developer.iron_man.gpsmain;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,13 +17,19 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.developer.iron_man.gpsmain.Activities.MainActivity;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by Iron_Man on 24/06/17.
  */
 
-public class GPSTracker extends Service implements LocationListener {
+public class GPSTracker implements LocationListener {
 
     private final Context mContext;
     // Flag for GPS status
@@ -38,20 +46,27 @@ public class GPSTracker extends Service implements LocationListener {
     double longitude; // Longitude
 
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meters
 
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
+    double lat_old=0.0;
+    double lon_old=0.0;
+    double lat_new;
+    double lon_new;
+    double time=10;
+    double speed=0.0;
+
 
     public GPSTracker(Context context) {
         this.mContext = context;
-        getLocation();
+
     }
 
-    public Location getLocation() {
+    public void getLocation() {
         try {
             locationManager = (LocationManager) mContext
                     .getSystemService(LOCATION_SERVICE);
@@ -112,7 +127,7 @@ public class GPSTracker extends Service implements LocationListener {
             e.printStackTrace();
         }
 
-        return location;
+//        return location;
     }
 
 
@@ -197,6 +212,17 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+
+        lat_new=location.getLatitude();
+        lon_new=location.getLongitude();
+        double distance=calculateByDistance(lat_new,lon_new,lat_old,lon_old);
+        speed=distance/time;
+        if(speed<100)
+            Toast.makeText(mContext,"Speed: "+speed+"m/sec",Toast.LENGTH_SHORT).show();
+        if(speed>3&&speed<100)
+            addNotification();
+        lat_old=lat_new;
+        lon_old=lon_new;
     }
 
 
@@ -214,9 +240,46 @@ public class GPSTracker extends Service implements LocationListener {
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
+        double calculateByDistance(double lat1,double lon1,double lat2,double lon2){
 
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
+        double Radius=6371.00;
+        double dLat=Math.toRadians(lat2-lat1);
+        double dLon=Math.toRadians(lon2-lon1);
+        double a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(Math.toRadians(lat1))*Math.cos(Math.toRadians(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
+        double c=2*Math.asin(Math.sqrt(a));
+        return Radius*c;
+
     }
+
+    private void addNotification() {
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(mContext)
+                        .setSmallIcon(R.drawable.ic_location_on_black_24dp)
+                        .setContentTitle("Gps Tracker App")
+                        .setContentText("Are you travelling?");
+        NotificationManager mNotificationManager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
+
+        // Because clicking the notification opens a new ("special") activity, there's
+        // no need to create an artificial back stack.
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        mContext,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // mNotificationId is a unique integer your app uses to identify the
+        // notification. For example, to cancel the notification, you can pass its ID
+        // number to NotificationManager.cancel().
+        mNotificationManager.notify(1, mBuilder.build());
+
+    }
+
 }

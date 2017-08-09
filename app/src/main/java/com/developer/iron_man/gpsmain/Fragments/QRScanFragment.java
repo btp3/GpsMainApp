@@ -48,6 +48,7 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         qrScan.initiateScan();
+        qrScan.setBeepEnabled(true);
     }
 
     @Override

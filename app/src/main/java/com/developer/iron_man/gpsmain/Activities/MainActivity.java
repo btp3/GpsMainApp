@@ -25,6 +25,7 @@ import com.developer.iron_man.gpsmain.Fragments.Fragment_two;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
 import com.developer.iron_man.gpsmain.R;
+import com.developer.iron_man.gpsmain.Services.GpsService;
 
 /**
  * Created by sagar on 27/7/17.
@@ -98,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 CURRENT_TAG = TAG_HOME;
                 loadHomeFragment();
             }
+
+            startService(new Intent(MainActivity.this, GpsService.class));
         }
 
         /***
