@@ -57,7 +57,7 @@ public class GPSTracker implements LocationListener {
     double lon_old=0.0;
     double lat_new;
     double lon_new;
-    double time=10;
+    double time=5;
     double speed=0.0;
 
 
@@ -66,7 +66,7 @@ public class GPSTracker implements LocationListener {
 
     }
 
-    public void getLocation() {
+    public Location getLocation() {
         try {
             locationManager = (LocationManager) mContext
                     .getSystemService(LOCATION_SERVICE);
@@ -127,7 +127,7 @@ public class GPSTracker implements LocationListener {
             e.printStackTrace();
         }
 
-//        return location;
+        return location;
     }
 
 
@@ -218,7 +218,7 @@ public class GPSTracker implements LocationListener {
         double distance=calculateByDistance(lat_new,lon_new,lat_old,lon_old);
         speed=distance/time;
         if(speed<100)
-            Toast.makeText(mContext,"Speed: "+speed+"m/sec",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"Speed2: "+speed+" m/sec",Toast.LENGTH_SHORT).show();
         if(speed>3&&speed<100)
             addNotification();
         lat_old=lat_new;

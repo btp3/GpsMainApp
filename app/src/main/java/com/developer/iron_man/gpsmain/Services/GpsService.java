@@ -1,19 +1,13 @@
 package com.developer.iron_man.gpsmain.Services;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
-
-import com.developer.iron_man.gpsmain.Activities.MainActivity;
 import com.developer.iron_man.gpsmain.GPSTracker;
-import com.developer.iron_man.gpsmain.R;
+
 
 /**
  * Created by sagar on 5/8/17.
@@ -40,11 +34,12 @@ public class GpsService extends Service {
 
                 GPSTracker gpsTracker=new GPSTracker(context);
                 gpsTracker.getLocation();
+                Toast.makeText(context,"Speed1: "+gpsTracker.getLocation().getSpeed()+"",Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, 5000);
             }
         };
 
-        handler.postDelayed(runnable, 10000);
+        handler.postDelayed(runnable, 5000);
     }
 
     @Override
