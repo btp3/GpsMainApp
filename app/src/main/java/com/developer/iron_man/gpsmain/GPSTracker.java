@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -49,7 +50,7 @@ public class GPSTracker implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meters
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
@@ -59,6 +60,8 @@ public class GPSTracker implements LocationListener {
     double lon_new;
     double time=5;
     double speed=0.0;
+    Criteria criteria;
+    String bestProvider;
 
 
     public GPSTracker(Context context) {
@@ -78,6 +81,9 @@ public class GPSTracker implements LocationListener {
             // Getting network status
             isNetworkEnabled = locationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            criteria = new Criteria();
+            bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // No network provider is enabled
@@ -122,6 +128,12 @@ public class GPSTracker implements LocationListener {
                     }
                 }
             }
+
+            if(location==null)
+            {
+                locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
+            }
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -213,6 +225,9 @@ public class GPSTracker implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
 
+        //remove location callback:
+        locationManager.removeUpdates(this);
+
         lat_new=location.getLatitude();
         lon_new=location.getLongitude();
         double distance=calculateByDistance(lat_new,lon_new,lat_old,lon_old);
@@ -281,5 +296,6 @@ public class GPSTracker implements LocationListener {
         mNotificationManager.notify(1, mBuilder.build());
 
     }
+
 
 }

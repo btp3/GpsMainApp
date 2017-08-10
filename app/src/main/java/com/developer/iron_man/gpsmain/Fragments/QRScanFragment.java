@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,14 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import models.LocationModel;
+import models.QRModel;
+import retrofit.APIServices;
+import retrofit.APIUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by sagar on 27/7/17.
  */
@@ -26,19 +35,20 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
 
     private View view;
     Button scan;
-    TextView plate, aadhar;
     //qr code scanner object
     private IntentIntegrator qrScan;
+
+    APIServices mAPIService;
+    QRModel qrModel;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.qr_activity,container,false);
         scan = (Button) view.findViewById(R.id.buttonScan);
-        plate = (TextView) view.findViewById(R.id.textViewPlate);
-        aadhar = (TextView) view.findViewById(R.id.textViewAadhar);
+        mAPIService = APIUtil.getAPIService();
         //intializing scan object
-        qrScan = new IntentIntegrator(getActivity());
+        qrScan = IntentIntegrator.forSupportFragment(this);
         //attaching onclick listener
         scan.setOnClickListener(this);
 
@@ -64,10 +74,8 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
                     //converting the data to json
                     JSONObject obj = new JSONObject(result.getContents());
                     // Expected JSON file
-                    // {"plate":"RJ06SA2546", "aadhar":"123456123456"}
-                    //setting values to textviews
-                    plate.setText(obj.getString("plate"));
-                    aadhar.setText(obj.getString("aadhar"));
+                    // {"plate":"5600MP0596"}
+                    getQRData(obj.getString("plate"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     //if control comes here
@@ -79,6 +87,26 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+            Log.e("Plate: ","565656");
         }
+    }
+
+    public void getQRData(String license_num){
+
+        mAPIService.getDriverDetails(license_num).enqueue(new Callback<QRModel>() {
+            @Override
+            public void onResponse(Call<QRModel> call, Response<QRModel> response) {
+
+                if(response.isSuccessful()) {
+                    Log.i("Response from", "post submitted to API : " + response.body().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QRModel> call, Throwable t) {
+                Log.e("SendLocation : ", "Unable to submit post to API.");
+            }
+        });
+
     }
 }

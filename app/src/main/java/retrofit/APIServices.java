@@ -5,13 +5,16 @@ package retrofit;
  */
 
 import models.LocationModel;
+import models.QRModel;
 import models.UserModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface APIServices {
 
@@ -21,4 +24,7 @@ public interface APIServices {
     @Multipart
     @POST("/api/accounts/user/create/")
     Call<UserModel> createUser();
+
+    @GET("/api/accounts/drivers/{license_num}")
+    Call<QRModel> getDriverDetails(@Path("license_num") String license_num);
 }

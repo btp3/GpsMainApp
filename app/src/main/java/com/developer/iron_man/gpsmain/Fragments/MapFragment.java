@@ -3,6 +3,7 @@ package com.developer.iron_man.gpsmain.Fragments;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.developer.iron_man.gpsmain.Activities.MainActivity;
+import com.developer.iron_man.gpsmain.GPSTracker;
 import com.developer.iron_man.gpsmain.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -78,11 +80,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
-        LatLng delhi = new LatLng(28.650701, 77.233410);
-        mMap.addMarker(new MarkerOptions().position(delhi).icon(BitmapDescriptorFactory.fromResource(R.drawable.logom))
-                .title("Marker in Delhi"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(delhi));
-        mMap.setMinZoomPreference(10.0f);
+        GPSTracker gpsTracker=new GPSTracker(getActivity());
+        LatLng loc = new LatLng(gpsTracker.getLocation().getLatitude(), gpsTracker.getLocation().getLongitude());
+        mMap.addMarker(new MarkerOptions().position(loc).icon(BitmapDescriptorFactory.fromResource(R.drawable.logom))
+                .title("My position"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+        mMap.setMinZoomPreference(15.0f);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -94,9 +97,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-
-        //Adding button to find my location
-        mMap.setMyLocationEnabled(true);
 
     }
 
