@@ -76,8 +76,8 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 RequestBody fullName = RequestBody.create(MediaType.parse("multipart/form-data"), "Your Name");
                 String json = new Gson().toJson(userModel);
 
-                Intent intent = new Intent(CompleteProfileActivity.this, QRScanner.class);
-                startActivity(intent);
+//                Intent intent = new Intent(CompleteProfileActivity.this, QRScanner.class);
+//                startActivity(intent);
             }
         });
     }

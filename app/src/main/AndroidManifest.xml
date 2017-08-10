@@ -32,7 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".CompleteProfileActivity"/>
-        <activity android:name=".QRScanner"></activity>
         <activity android:name=".Activities.AboutUsActivity"></activity>
         <activity android:name=".Activities.PrivacyPolicyActivity"></activity>
 

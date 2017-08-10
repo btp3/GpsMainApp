@@ -1,5 +1,6 @@
 package com.developer.iron_man.gpsmain.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,17 +37,28 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
 
     private View view;
     Button scan;
+    ImageView imageView;
+    TextView text,name,contact,address,licence_no,aadhar,photo,scand;
     //qr code scanner object
     private IntentIntegrator qrScan;
-
+    ProgressDialog dialog;
     APIServices mAPIService;
-    QRModel qrModel;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.qr_activity,container,false);
         scan = (Button) view.findViewById(R.id.buttonScan);
+        imageView=(ImageView)view.findViewById(R.id.qr_image);
+        text=(TextView)view.findViewById(R.id.text1);
+        name=(TextView)view.findViewById(R.id.name);
+        contact=(TextView)view.findViewById(R.id.contact);
+        address=(TextView)view.findViewById(R.id.address);
+        licence_no=(TextView)view.findViewById(R.id.license);
+        aadhar=(TextView)view.findViewById(R.id.aadhar);
+        photo=(TextView)view.findViewById(R.id.photo);
+        scand=(TextView)view.findViewById(R.id.scan);
+        dialog=new ProgressDialog(getActivity());
         mAPIService = APIUtil.getAPIService();
         //intializing scan object
         qrScan = IntentIntegrator.forSupportFragment(this);
@@ -75,6 +88,10 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
                     JSONObject obj = new JSONObject(result.getContents());
                     // Expected JSON file
                     // {"plate":"5600MP0596"}
+                    imageView.setVisibility(View.GONE);
+                    text.setVisibility(View.GONE);
+                    scan.setVisibility(View.GONE);
+                    dialog = ProgressDialog.show(getActivity(),null,"Loading...", true);
                     getQRData(obj.getString("plate"));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -91,7 +108,7 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void getQRData(String license_num){
+    public void getQRData(final String license_num){
 
         mAPIService.getDriverDetails(license_num).enqueue(new Callback<QRModel>() {
             @Override
@@ -99,6 +116,14 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
 
                 if(response.isSuccessful()) {
                     Log.i("Response from", "post submitted to API : " + response.body().toString());
+                    dialog.dismiss();
+                    name.setText("Name: "+response.body().getDname());
+                    contact.setText("Contact: "+response.body().getDcontact());
+                    address.setText("Address: "+response.body().getDaddress());
+                    aadhar.setText("Aadhar Number: "+response.body().getDaadhar());
+                    photo.setText("Image url: "+response.body().getDphoto());
+                    licence_no.setText("License Plate No: "+response.body().getDlicense());
+                    scand.setText("Scanned Document url: "+response.body().getDscan());
                 }
             }
 
