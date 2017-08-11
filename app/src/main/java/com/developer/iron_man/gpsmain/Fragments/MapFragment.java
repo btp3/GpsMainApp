@@ -3,7 +3,6 @@ package com.developer.iron_man.gpsmain.Fragments;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.developer.iron_man.gpsmain.Activities.MainActivity;
-import com.developer.iron_man.gpsmain.GPSTracker;
+import com.developer.iron_man.gpsmain.Others.GPSTracker;
 import com.developer.iron_man.gpsmain.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

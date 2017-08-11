@@ -9,10 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.developer.iron_man.gpsmain.Others.GPSTracker;
+
 import models.LocationModel;
 import retrofit.APIServices;
 import retrofit.APIUtil;
-import retrofit.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
