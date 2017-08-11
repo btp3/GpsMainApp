@@ -52,19 +52,22 @@ public class HomeFragment extends Fragment {
         //setting up the custom text for the tabs
         tabOne = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
         tabOne.setText("Map");
-        tabOne.setTextColor(Color.BLACK);
+        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_location_on_grey_24dp, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         tabTwo = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
         tabTwo.setText("Scan");
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_phone_android_green_24dp, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
         tabThree = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
         tabThree.setText("History");
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_speaker_notes_grey_24dp, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         tabfour = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
         tabfour.setText("Profile");
+        tabfour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_person_grey_24dp, 0, 0);
         tabLayout.getTabAt(3).setCustomView(tabfour);
     }
 

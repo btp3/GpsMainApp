@@ -40,7 +40,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fill_profile_details);
+        setContentView(R.layout.activity_register_layout);
         firstname = (EditText) findViewById(R.id.firstName);
         lastName = (EditText) findViewById(R.id.lastName);
         address = (EditText) findViewById(R.id.address);
@@ -116,4 +116,6 @@ public class CompleteProfileActivity extends AppCompatActivity {
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
+
+
 }

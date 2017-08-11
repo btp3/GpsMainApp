@@ -25,7 +25,7 @@
         <activity android:name=".LocationDetect">
 
         </activity>
-        <activity android:name=".Activities.MainActivity">
+        <activity android:name=".SignUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,6 +34,8 @@
         <activity android:name=".CompleteProfileActivity"/>
         <activity android:name=".Activities.AboutUsActivity"></activity>
         <activity android:name=".Activities.PrivacyPolicyActivity"></activity>
+        <activity android:name=".Activities.RegisterActivity"></activity>
+        <activity android:name=".Activities.MainActivity"></activity>
 
 
         <meta-data

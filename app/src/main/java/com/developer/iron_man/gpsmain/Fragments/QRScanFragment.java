@@ -104,7 +104,7 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
-            Log.e("Plate: ","565656");
+
         }
     }
 
@@ -115,7 +115,7 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
             public void onResponse(Call<QRModel> call, Response<QRModel> response) {
 
                 if(response.isSuccessful()) {
-                    Log.i("Response from", "post submitted to API : " + response.body().toString());
+
                     dialog.dismiss();
                     name.setText("Name: "+response.body().getDname());
                     contact.setText("Contact: "+response.body().getDcontact());
@@ -129,7 +129,9 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Call<QRModel> call, Throwable t) {
-                Log.e("SendLocation : ", "Unable to submit post to API.");
+
+                Toast.makeText(getActivity(), "Result Not Found", Toast.LENGTH_LONG).show();
+
             }
         });
 
