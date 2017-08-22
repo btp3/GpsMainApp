@@ -24,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -79,12 +80,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
+        mMap.setMyLocationEnabled(true);
         GPSTracker gpsTracker=new GPSTracker(getActivity());
         LatLng loc = new LatLng(gpsTracker.getLocation().getLatitude(), gpsTracker.getLocation().getLongitude());
-        mMap.addMarker(new MarkerOptions().position(loc).icon(BitmapDescriptorFactory.fromResource(R.drawable.logom))
-                .title("My position"));
+        mMap.clear();
+//        mMap.addMarker(new MarkerOptions().position(loc).icon(BitmapDescriptorFactory.fromResource(R.drawable.logom))
+//                .title("My position"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-        mMap.setMinZoomPreference(10.0f);
+        mMap.setMinZoomPreference(15.0f);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

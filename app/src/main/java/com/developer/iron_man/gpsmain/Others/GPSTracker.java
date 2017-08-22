@@ -46,25 +46,23 @@ public class GPSTracker implements LocationListener {
     double longitude; // Longitude
 
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
+    private static final long MIN_TIME_BW_UPDATES = 0;
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
-    double lat_old=0.0;
-    double lon_old=0.0;
-    double lat_new;
-    double lon_new;
-    double time=5;
-    double speed=0.0;
+    double curTime= 0;
+    double oldLat = 0.0;
+    double oldLon = 0.0;
     Criteria criteria;
     String bestProvider;
 
 
     public GPSTracker(Context context) {
         this.mContext = context;
+
 
     }
 
@@ -130,7 +128,7 @@ public class GPSTracker implements LocationListener {
 
             if(location==null)
             {
-                locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
+                locationManager.requestLocationUpdates(bestProvider, 5000, 0, this);
             }
 
         }
@@ -224,19 +222,7 @@ public class GPSTracker implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
 
-        //remove location callback:
-        locationManager.removeUpdates(this);
-
-        lat_new=location.getLatitude();
-        lon_new=location.getLongitude();
-        double distance=calculateByDistance(lat_new,lon_new,lat_old,lon_old);
-        speed=distance/time;
-        if(speed<100)
-            Toast.makeText(mContext,"Speed2: "+speed+" m/sec",Toast.LENGTH_SHORT).show();
-        if(speed>3&&speed<100)
-            addNotification();
-        lat_old=lat_new;
-        lon_old=lon_new;
+        getSpeed(location);
     }
 
 
@@ -254,9 +240,9 @@ public class GPSTracker implements LocationListener {
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
-        double calculateByDistance(double lat1,double lon1,double lat2,double lon2){
+    double calculateByDistance(double lat1,double lon1,double lat2,double lon2){
 
-        double Radius=6371.00;
+        double Radius=6371000.00;
         double dLat=Math.toRadians(lat2-lat1);
         double dLon=Math.toRadians(lon2-lon1);
         double a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(Math.toRadians(lat1))*Math.cos(Math.toRadians(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
@@ -294,6 +280,24 @@ public class GPSTracker implements LocationListener {
         // number to NotificationManager.cancel().
         mNotificationManager.notify(1, mBuilder.build());
 
+    }
+
+    private void getSpeed(Location location){
+        double newTime= System.currentTimeMillis();
+        double newLat = location.getLatitude();
+        double newLon = location.getLongitude();
+        if(location.hasSpeed()){
+            float speed = location.getSpeed();
+            Toast.makeText(mContext,"SPEED1 : "+String.valueOf(speed)+"m/s",Toast.LENGTH_SHORT).show();
+        } else {
+            double distance = calculateByDistance(newLat,newLon,oldLat,oldLon);
+            double timeDifferent = newTime - curTime;
+            double speed = distance/timeDifferent;
+            curTime = newTime;
+            oldLat = newLat;
+            oldLon = newLon;
+            Toast.makeText(mContext,"SPEED2 : "+String.valueOf(speed)+"m/s",Toast.LENGTH_SHORT).show();
+        }
     }
 
 

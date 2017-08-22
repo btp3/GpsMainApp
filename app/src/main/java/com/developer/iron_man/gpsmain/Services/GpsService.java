@@ -34,7 +34,6 @@ public class GpsService extends Service {
 
                 GPSTracker gpsTracker=new GPSTracker(context);
                 gpsTracker.getLocation();
-                Toast.makeText(context,"Speed1: "+gpsTracker.getLocation().getSpeed()+"",Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, 5000);
             }
         };

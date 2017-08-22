@@ -18,11 +18,11 @@ import retrofit2.http.Path;
 
 public interface APIServices {
 
-    @POST("/api/create/")
+    @POST("/api/location/create/")
     Call<LocationModel> savePost(@Body LocationModel locationModel);
 
     @Multipart
-    @POST("/api/accounts/user/create/")
+    @POST("/api/accounts/users/create/")
     Call<UserModel> createUser();
 
     @GET("/api/accounts/drivers/{license_num}")

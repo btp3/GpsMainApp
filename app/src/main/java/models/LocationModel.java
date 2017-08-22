@@ -1,29 +1,22 @@
 package models;
 
-/**
- * Created by Iron_Man on 24/06/17.
- */
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+
 
 public class LocationModel {
 
-    @SerializedName("user")
-    @Expose
-    private String user;
-    @SerializedName("latitude")
-    @Expose
     private String latitude;
-    @SerializedName("longitude")
-    @Expose
     private String longitude;
+    private String speed;
+    private Object timestamp;
 
-    public String getUser() {
-        return user;
+    public LocationModel() {
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public LocationModel(String latitude, String longitude, String speed, Object timestamp) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.speed = speed;
+        this.timestamp = timestamp;
     }
 
     public String getLatitude() {
@@ -40,6 +33,22 @@ public class LocationModel {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(String speed) {
+        this.speed = speed;
+    }
+
+    public Object getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Object timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

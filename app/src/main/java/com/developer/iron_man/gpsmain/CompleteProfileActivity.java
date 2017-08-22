@@ -19,9 +19,14 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
 
+import models.LocationModel;
 import models.UserModel;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import retrofit.APIServices;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Iron_Man on 25/06/17.
@@ -36,6 +41,8 @@ public class CompleteProfileActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private String KEY_IMAGE = "image";
     private String KEY_NAME = "name";
+
+    APIServices mAPIService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,12 +79,10 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 Log.d("User : ", userModel.getUsername() + "  " + userModel.getAadhar());
 
                 // Send user details
-                //sendUser();
+                sendUser();
                 RequestBody fullName = RequestBody.create(MediaType.parse("multipart/form-data"), "Your Name");
                 String json = new Gson().toJson(userModel);
 
-//                Intent intent = new Intent(CompleteProfileActivity.this, QRScanner.class);
-//                startActivity(intent);
             }
         });
     }
@@ -115,6 +120,25 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    void sendUser(){
+        mAPIService.createUser().enqueue(new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+
+                if(response.isSuccessful()) {
+                    Log.i("Response from", "post submitted to API : " + response.body().toString());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                Log.e("SendLocation : ", "Unable to submit post to API.");
+            }
+        });
+
     }
 
 
