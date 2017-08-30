@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,12 +17,6 @@ import android.widget.TextView;
 
 import com.developer.iron_man.gpsmain.R;
 import com.developer.iron_man.gpsmain.Services.LocationService;
-
-import models.LocationModel;
-import retrofit.APIServices;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by sagar on 21/8/17.

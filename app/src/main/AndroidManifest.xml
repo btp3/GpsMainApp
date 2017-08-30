@@ -24,7 +24,7 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true">
 
-        <activity android:name=".Activities.LocationActivity">
+        <activity android:name=".Activities.SignUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

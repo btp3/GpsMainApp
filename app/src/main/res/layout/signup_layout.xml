@@ -137,6 +137,7 @@
             android:textColor="@color/colorAccent"
             android:layout_gravity="center"
             android:minHeight="35dp"
+            android:id="@+id/sign_in_button"
             />
 
     </LinearLayout>

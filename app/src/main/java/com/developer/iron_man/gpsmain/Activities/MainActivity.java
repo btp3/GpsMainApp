@@ -3,9 +3,7 @@ package com.developer.iron_man.gpsmain.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.developer.iron_man.gpsmain.Fragments.Fragment_three;
@@ -25,7 +24,6 @@ import com.developer.iron_man.gpsmain.Fragments.Fragment_two;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
 import com.developer.iron_man.gpsmain.R;
-import com.developer.iron_man.gpsmain.Services.GpsService;
 
 /**
  * Created by sagar on 27/7/17.
@@ -99,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
                 CURRENT_TAG = TAG_HOME;
                 loadHomeFragment();
             }
-
-            startService(new Intent(MainActivity.this, GpsService.class));
         }
 
         /***

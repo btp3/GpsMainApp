@@ -108,4 +108,18 @@ public class UserModel {
         this.photo = photo;
     }
 
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", contact='" + contact + '\'' +
+                ", aadhar='" + aadhar + '\'' +
+                ", photo='" + photo + '\'' +
+                '}';
+    }
 }

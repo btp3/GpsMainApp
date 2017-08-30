@@ -16,12 +16,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 import models.LocationModel;
 import retrofit.APIServices;
+import retrofit.APIUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +52,7 @@ public class LocationService extends Service implements
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        mAPIService= APIUtil.getAPIService();
         createLocationRequest();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -141,11 +144,11 @@ public class LocationService extends Service implements
             locationModel.setLatitude(lEnd.getLatitude()+"");
             locationModel.setLongitude(lEnd.getLongitude()+"");
             locationModel.setSpeed(speed+"");
-            locationModel.setTimestamp(LocationActivity.endTime+"");
+            locationModel.setLocType("user");
+            locationModel.setTypeId(1);
 
-
-                //posting location model on the server
-                //sendLocation(locationModel);
+            //posting location model on the server
+            sendLocation(locationModel);
 
             LocationActivity.time.setText("Total Time: " + diff + " minutes");
             if (speed > 0.0)
@@ -175,10 +178,12 @@ public class LocationService extends Service implements
     }
 
     public void sendLocation(LocationModel locationModel){
+        Gson g = new Gson();
+        Log.e("In sendLocation : ", g.toJson(locationModel));
         mAPIService.savePost(locationModel).enqueue(new Callback<LocationModel>() {
             @Override
             public void onResponse(Call<LocationModel> call, Response<LocationModel> response) {
-
+                Log.e("In response : ", response.toString());
                 if(response.isSuccessful()) {
                     Toast.makeText(getApplicationContext(),"Done posting",Toast.LENGTH_SHORT).show();
                 }

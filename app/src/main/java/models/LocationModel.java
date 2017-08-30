@@ -1,23 +1,29 @@
 package models;
 
+import java.io.Serializable;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
+public class LocationModel implements Serializable
+{
 
-public class LocationModel {
-
+    @SerializedName("latitude")
+    @Expose
     private String latitude;
+    @SerializedName("longitude")
+    @Expose
     private String longitude;
+    @SerializedName("speed")
+    @Expose
     private String speed;
-    private Object timestamp;
+    @SerializedName("loc_type")
+    @Expose
+    private String locType;
+    @SerializedName("type_id")
+    @Expose
+    private long typeId;
+    private final static long serialVersionUID = -9080877836218750667L;
 
-    public LocationModel() {
-    }
-
-    public LocationModel(String latitude, String longitude, String speed, Object timestamp) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.speed = speed;
-        this.timestamp = timestamp;
-    }
 
     public String getLatitude() {
         return latitude;
@@ -43,12 +49,30 @@ public class LocationModel {
         this.speed = speed;
     }
 
-    public Object getTimestamp() {
-        return timestamp;
+    public String getLocType() {
+        return locType;
     }
 
-    public void setTimestamp(Object timestamp) {
-        this.timestamp = timestamp;
+    public void setLocType(String locType) {
+        this.locType = locType;
     }
 
+    public long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(long typeId) {
+        this.typeId = typeId;
+    }
+
+    @Override
+    public String toString() {
+        return "LocationModel{" +
+                "latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", speed='" + speed + '\'' +
+                ", locType='" + locType + '\'' +
+                ", typeId=" + typeId +
+                '}';
+    }
 }

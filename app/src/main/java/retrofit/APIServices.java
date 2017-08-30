@@ -4,15 +4,17 @@ package retrofit;
  * Created by Iron_Man on 24/06/17.
  */
 
+import com.google.gson.JsonObject;
+
 import models.LocationModel;
+import models.LoginModel;
 import models.QRModel;
+import models.User;
 import models.UserModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -21,10 +23,17 @@ public interface APIServices {
     @POST("/api/location/create/")
     Call<LocationModel> savePost(@Body LocationModel locationModel);
 
-    @Multipart
-    @POST("/api/accounts/users/create/")
-    Call<UserModel> createUser();
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("/account/test/")
+    Call<User> createNewUser(@Body User user);
+
+    @POST("/account/test/")
+    Call<UserModel> createUser(@Body UserModel userModel);
 
     @GET("/api/accounts/drivers/{license_num}")
     Call<QRModel> getDriverDetails(@Path("license_num") String license_num);
+
+    @Headers("Content-Type: application/json")
+    @POST("/api-token-auth/")
+    Call<JsonObject> getToken(@Body JsonObject loginModel);
 }
