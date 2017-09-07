@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -24,7 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import models.User;
-import models.UserModel;
+
 import retrofit.APIServices;
 import retrofit.APIUtil;
 import retrofit2.Call;
@@ -40,7 +41,6 @@ public class CompleteProfileActivity extends AppCompatActivity {
     EditText firstname, lastName, address, contact, aadhar;
     TextView photo;
     Button save;
-    UserModel userModel;
     private Bitmap bitmap;
     ImageView image;
     User u;
@@ -64,8 +64,8 @@ public class CompleteProfileActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         u = new User();
         u.setUsername(bundle.getString("username"));
-        u.setEmail("sagarsharma708@gmail.com");
-        u.setPassword("sagar1234!");
+        u.setEmail(bundle.getString("email"));
+        u.setPassword(bundle.getString("password"));
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,13 +77,12 @@ public class CompleteProfileActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                u.setFirstName("Sagar");
-                u.setLastName("Sharma");
-                u.setAddress("A-21, Balaji puram ,Shahganj ,Agra");
-                u.setContact("7049575274");
-                u.setAadhar(Long.parseLong("745274527452"));
-                u.setPhoto("pic");
-                Log.e("User : ", u.getUsername() + "  " + u.getAadhar());
+                u.setFirstName(firstname.getText().toString());
+                u.setLastName(lastName.getText().toString());
+                u.setAddress(address.getText().toString());
+                u.setContact(contact.getText().toString());
+                u.setAadhar(Long.parseLong(aadhar.getText().toString()));
+                u.setPhoto(getStringImage(bitmap));
 
                 // Send user details
                 Gson g = new Gson();
@@ -117,15 +116,15 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
 
     void createUser(User user){
-        Log.e("In createUser : ", user.toString());
-        String ct = "application/x-www-form-urlencoded;charset=UTF-8";
+
         mAPIService.createNewUser(user).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.e("In response : ", response.toString());
+
                 if(response.isSuccessful()) {
 
-                    Log.e("Response from", "post submitted to API : " + response.body().toString());
+                    Log.e("Response :",response.body().toString());
+                    Toast.makeText(getApplicationContext(),"Registration Successful",Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -137,26 +136,6 @@ public class CompleteProfileActivity extends AppCompatActivity {
         });
     }
 
-    void sendUser(){
-        Log.e("In sendUser : ", userModel.toString());
-        mAPIService.createUser(userModel).enqueue(new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                Log.e("In response : ", response.toString());
-                if(response.isSuccessful()) {
-
-                    Log.e("Response from", "post submitted to API : " + response.body().toString());
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.e("SendLocation : ", "Unable to submit post to API.");
-            }
-        });
-
-    }
 
     public String getStringImage(Bitmap bmp){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

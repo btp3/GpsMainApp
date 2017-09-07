@@ -34,6 +34,7 @@
         <activity android:name=".Activities.AboutUsActivity"></activity>
         <activity android:name=".Activities.PrivacyPolicyActivity"></activity>
         <activity android:name=".Activities.RegisterActivity"></activity>
+        <activity android:name=".Activities.MainActivity"></activity>
 
 
 

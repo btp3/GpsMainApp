@@ -84,6 +84,7 @@ public class GPSTracker implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // No network provider is enabled
+
             } else {
                 this.canGetLocation = true;
                 if (isNetworkEnabled) {
@@ -222,7 +223,6 @@ public class GPSTracker implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
 
-        getSpeed(location);
     }
 
 

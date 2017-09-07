@@ -7,7 +7,6 @@ package retrofit;
 import com.google.gson.JsonObject;
 
 import models.LocationModel;
-import models.LoginModel;
 import models.QRModel;
 import models.User;
 import models.UserModel;
@@ -27,13 +26,13 @@ public interface APIServices {
     @POST("/account/test/")
     Call<User> createNewUser(@Body User user);
 
-    @POST("/account/test/")
-    Call<UserModel> createUser(@Body UserModel userModel);
-
     @GET("/api/accounts/drivers/{license_num}")
     Call<QRModel> getDriverDetails(@Path("license_num") String license_num);
 
     @Headers("Content-Type: application/json")
     @POST("/api-token-auth/")
     Call<JsonObject> getToken(@Body JsonObject loginModel);
+
+    @GET("/api/accounts/users/{username}")
+    Call<UserModel> getUserDetails(@Path("username") String username);
 }

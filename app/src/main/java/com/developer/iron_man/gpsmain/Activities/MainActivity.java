@@ -1,21 +1,31 @@
 package com.developer.iron_man.gpsmain.Activities;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -23,26 +33,36 @@ import com.developer.iron_man.gpsmain.Fragments.Fragment_three;
 import com.developer.iron_man.gpsmain.Fragments.Fragment_two;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
+import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
+import com.google.gson.Gson;
+
+import java.io.ByteArrayOutputStream;
+
+import models.UserModel;
+import retrofit.APIServices;
+import retrofit.APIUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by sagar on 27/7/17.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
         private NavigationView navigationView;
         private DrawerLayout drawer;
         private View navHeader;
         private ImageView imgNavHeaderBg, imgProfile;
-        private TextView txtName, txtWebsite;
+        private TextView txtName, txtWebsite,logout;
         private Toolbar toolbar;
 
 
         // urls to load navigation header background image
         // and profile image
         private static final String urlNavHeaderBg = "http://api.androidhive.info/images/nav-menu-header-bg.jpg";
-        private static final String urlProfileImg = "https://lh3.googleusercontent.com/eCtE_G34M9ygdkmOpYvCag1vBARCmZwnVS6rS5t4JLzJ6QgQSBquM0nuTsCpLhYbKljoyS-txg";
 
         // index to identify current nav menu item
         public static int navItemIndex = 0;
@@ -61,42 +81,23 @@ public class MainActivity extends AppCompatActivity {
         // flag to load home fragment when user presses back key
         private boolean shouldLoadHomeFragOnBackPress = true;
         private Handler mHandler;
+        PrefManager pref;
+        UserModel obj;
+        APIServices mApiService;
+        ProgressDialog dialog;
 
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
-            toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+            mApiService= APIUtil.getAPIService();
+            pref=new PrefManager(getApplicationContext());
+            dialog=new ProgressDialog(MainActivity.this);
+            Bundle bundle = getIntent().getExtras();
+            dialog = ProgressDialog.show(MainActivity.this,null,"Loading...", true);
+            getUserInfo(bundle.getString("username"),savedInstanceState);
 
-            mHandler = new Handler();
-
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-
-            // Navigation view header
-            navHeader = navigationView.getHeaderView(0);
-            txtName = (TextView) navHeader.findViewById(R.id.name);
-            txtWebsite = (TextView) navHeader.findViewById(R.id.website);
-            imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
-            imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
-
-            // load toolbar titles from string resources
-            activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
-
-            // load nav menu header data
-            loadNavHeader();
-
-            // initializing navigation menu
-            setUpNavigationView();
-
-            if (savedInstanceState == null) {
-                navItemIndex = 0;
-                CURRENT_TAG = TAG_HOME;
-                loadHomeFragment();
-            }
         }
 
         /***
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         private void loadNavHeader() {
             // name, website
             txtName.setText("Hi");
-            txtWebsite.setText("Sagar Sharma");
+            txtWebsite.setText(obj.getName());
 
             // loading header background image
             Glide.with(this).load(urlNavHeaderBg)
@@ -116,10 +117,13 @@ public class MainActivity extends AppCompatActivity {
                     .into(imgNavHeaderBg);
 
             // Loading profile image
-            Glide.with(this).load(R.drawable.sagar)
-                    .crossFade()
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            getImage(obj.getPhoto()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+            Glide.with(this)
+                    .load(stream.toByteArray())
+                    .asBitmap()
                     .thumbnail(0.5f)
-                    .bitmapTransform(new CircleTrasform(this))
+                    .transform(new CircleTrasform(this))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imgProfile);
 
@@ -317,6 +321,146 @@ public class MainActivity extends AppCompatActivity {
         public boolean onCreateOptionsMenu(Menu menu) {
             return super.onCreateOptionsMenu(menu);
         }
+
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Enable GPS to use application")
+                .setCancelable(false)
+                .setPositiveButton("Enable GPS",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId())
+        {
+            case R.id.logout:
+
+                pref.setUser(null);
+                logout.setVisibility(View.GONE);
+                startActivity(new Intent(this,SignUpActivity.class));
+                finish();
+        }
+    }
+
+    public Bitmap getImage(String encodedimage){
+        byte[] decodedString = Base64.decode(encodedimage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
+
+    void getUserInfo(String username, final Bundle saveBundle){
+
+        mApiService.getUserDetails(username).enqueue(new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+
+
+
+                if(response.isSuccessful()) {
+
+                    Log.e("Name:",response.body().getName());
+                    Gson g=new Gson();
+                    String user=g.toJson(response.body());
+                    pref.setUser(user);
+                    dialog.dismiss();
+                    init(saveBundle);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+
+                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_LONG).show();
+
+            }
+        });
+        
+
+    }
+
+//    class GetUser extends AsyncTask<String,Void,UserModel>{
+//
+//        @Override
+//        protected UserModel doInBackground(String... params) {
+//            UserModel u=getUserInfo(params[0]);
+//
+//            return u;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            dialog = ProgressDialog.show(MainActivity.this,null,"Loading...", true);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(UserModel userModel) {
+//
+//        }
+//    }
+
+    public void init(Bundle savedInstanceState){
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        logout=(TextView)toolbar.findViewById(R.id.logout);
+        setSupportActionBar(toolbar);
+
+        mHandler = new Handler();
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+
+        // Navigation view header
+        navHeader = navigationView.getHeaderView(0);
+        txtName = (TextView) navHeader.findViewById(R.id.name);
+        txtWebsite = (TextView) navHeader.findViewById(R.id.website);
+        imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
+        imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
+
+        // load toolbar titles from string resources
+        activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
+
+        Gson gson = new Gson();
+        String u = pref.getUser();
+
+        if(u!=null)
+        {
+            obj = gson.fromJson(u, UserModel.class);
+            logout.setVisibility(View.VISIBLE);
+        }
+
+        // load nav menu header data
+        loadNavHeader();
+
+        // initializing navigation menu
+        setUpNavigationView();
+
+        if (savedInstanceState == null) {
+            navItemIndex = 0;
+            CURRENT_TAG = TAG_HOME;
+            loadHomeFragment();
+        }
+
+        logout.setOnClickListener(this);
+    }
 
 }
 

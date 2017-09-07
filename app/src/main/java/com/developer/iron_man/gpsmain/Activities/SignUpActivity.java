@@ -1,6 +1,8 @@
 package com.developer.iron_man.gpsmain.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.developer.iron_man.gpsmain.CompleteProfileActivity;
+import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -20,7 +23,7 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import models.LoginModel;
+import models.QRModel;
 import models.User;
 import models.UserModel;
 import retrofit.APIServices;
@@ -39,9 +42,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     TextView sign_in,sign_up,sign_in_text,sign_up_text;
     LinearLayout layout1,layout2;
     Button submit,signInButton;
-    UserModel userModel;
+    User user;
     String userEmail;
     APIServices mAPIService;
+    PrefManager prefManager;
+    ProgressDialog dialog;
+
+    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,9 +66,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         layout2=(LinearLayout)findViewById(R.id.layout2);
         signInButton=(Button)findViewById(R.id.sign_in_button);
         mAPIService= APIUtil.getAPIService();
+        prefManager=new PrefManager(getApplicationContext());
+        dialog=new ProgressDialog(SignUpActivity.this);
 
         // Creating a User with information provided by the user
-        userModel = new UserModel();
+        user = new User();
 
         sign_in.setOnClickListener(this);
         sign_up.setOnClickListener(this);
@@ -70,16 +79,16 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 if(password.getText().toString().equals(confirm_password.getText().toString())){
-                userEmail = email.getText().toString();
-                userModel.setEmail(userEmail);
-                userModel.setPassword(password.getText().toString());
-                userModel.setUsername(userEmail.split("@")[0]);
-                Log.d("Signup : ", userEmail+" "+userModel.getPassword()+" "+ userModel.getUsername());
-                Intent i = new Intent(SignUpActivity.this, CompleteProfileActivity.class);
-                i.putExtra("email",userEmail);
-                i.putExtra("password",userModel.getPassword());
-                i.putExtra("username",userModel.getUsername());
-                startActivity(i);finish();
+                    userEmail = email.getText().toString();
+                    user.setEmail(userEmail);
+                    user.setPassword(password.getText().toString());
+                    user.setUsername(userEmail.split("@")[0]);
+
+                    Intent i = new Intent(SignUpActivity.this, CompleteProfileActivity.class);
+                    i.putExtra("email",userEmail);
+                    i.putExtra("password",user.getPassword());
+                    i.putExtra("username",user.getUsername());
+                    startActivity(i);
                 }
                 else {
 
@@ -119,15 +128,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.sign_in_button:
 
-                LoginModel loginModel=new LoginModel();
-                loginModel.setUsername("amar");
-                loginModel.setPassword("baikunth");
-
                 JsonObject j=new JsonObject();
-                j.addProperty("username","amar");
-                j.addProperty("password","baikunth");
-
+                j.addProperty("username",email.getText().toString().split("@")[0]);
+                j.addProperty("password",password.getText().toString());
                 getLoginToken(j);
+                Intent i = new Intent(SignUpActivity.this, MainActivity.class);
+                i.putExtra("username",email.getText().toString().split("@")[0]);
+                startActivity(i);
+                finish();
 
         }
     }
@@ -137,14 +145,20 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mAPIService.getToken(loginModel).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("In response : ", response.toString());
+
 
                 if(response.isSuccessful()) {
-                    Log.e("Response from", "post submitted to API : " + response.body());
+
                     String s=response.body().toString();
                     try {
+
                         JSONObject obj=new JSONObject(s);
                         Log.e("Token: ",obj.getString("token"));
+                        String token=obj.getString("token");
+                        prefManager.setToken(token);
+
+
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -155,9 +169,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("SendLocation : ", "Unable to submit post to API.");
+                Log.e("Failed : ", "Unable to submit post to API.");
             }
         });
 
     }
+
+
+
 }
+
+

@@ -50,6 +50,7 @@
                 android:drawablePadding="15dp"
                 android:paddingBottom="20dp"
                 android:layout_marginBottom="0.1dp"
+                android:textCursorDrawable="@drawable/colour_cursor"
                 />
 
             <EditText
@@ -68,7 +69,8 @@
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="35dp"
                 android:paddingLeft="15dp"
-                android:drawablePadding="15dp"/>
+                android:drawablePadding="15dp"
+                android:textCursorDrawable="@drawable/colour_cursor"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -87,6 +89,7 @@
                 android:paddingLeft="15dp"
                 android:drawablePadding="15dp"
                 android:paddingRight="15dp"
+                android:textCursorDrawable="@drawable/colour_cursor"
                 />
 
             <EditText
@@ -107,6 +110,7 @@
                 android:paddingLeft="15dp"
                 android:drawablePadding="15dp"
                 android:paddingRight="15dp"
+                android:textCursorDrawable="@drawable/colour_cursor"
                 />
 
             <EditText
@@ -127,6 +131,7 @@
                 android:paddingLeft="15dp"
                 android:drawablePadding="15dp"
                 android:paddingRight="15dp"
+                android:textCursorDrawable="@drawable/colour_cursor"
                 />
 
             <TextView

@@ -1,63 +1,55 @@
+
 package models;
 
-/**
- * Created by Iron_Man on 25/06/17.
- */
+import android.util.Base64;
+
+import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserModel {
+public class UserModel implements Serializable
+{
 
+    @SerializedName("user_id")
+    @Expose
+    private String userId;
+    @SerializedName("name")
+    @Expose
+    private String name;
     @SerializedName("username")
     @Expose
     private String username;
-    @SerializedName("password")
-    @Expose
-    private String password;
-    @SerializedName("first_name")
-    @Expose
-    private String first_name;
-    @SerializedName("last_name")
-    @Expose
-    private String last_name;
     @SerializedName("email")
     @Expose
     private String email;
-    @SerializedName("address")
-    @Expose
-    private String address;
     @SerializedName("contact")
     @Expose
     private String contact;
+    @SerializedName("address")
+    @Expose
+    private String address;
     @SerializedName("aadhar")
     @Expose
     private String aadhar;
     @SerializedName("photo")
     @Expose
     private String photo;
+    private final static long serialVersionUID = 1602579436241154264L;
 
-    public String getFirst_name() {
-        return first_name;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getLast_name() {
-        return last_name;
-    }
-
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {
@@ -108,18 +100,6 @@ public class UserModel {
         this.photo = photo;
     }
 
-    @Override
-    public String toString() {
-        return "UserModel{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", contact='" + contact + '\'' +
-                ", aadhar='" + aadhar + '\'' +
-                ", photo='" + photo + '\'' +
-                '}';
-    }
+
+
 }
