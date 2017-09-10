@@ -12,4 +12,20 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="MyDialogTheme" parent="android:Theme.Dialog">
+        <!-- Fill the screen -->
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+
+        <!-- No backgrounds, titles or window float -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+
+
+        <!-- Just to prove it's working -->
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+
 </resources>

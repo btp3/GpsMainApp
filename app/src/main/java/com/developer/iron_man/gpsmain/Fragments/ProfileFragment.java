@@ -54,16 +54,7 @@ public class ProfileFragment extends Fragment {
         state.setText(address[l-2]+","+address[l-1]);
         profileImage.setImageBitmap(getImage(obj.getPhoto().trim()));
         coverPhoto.setImageBitmap(getImage(obj.getPhoto().trim()));
-
         return view;
-    }
-
-    public String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
     }
 
     public Bitmap getImage(String encodedimage){

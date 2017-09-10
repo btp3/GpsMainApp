@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,9 @@ public class HomeFragment extends Fragment {
     TextView tabOne;
     TextView tabTwo;
     TextView tabThree;
-    TextView tabfour;
+    TextView tabFour;
+    ViewPagerAdapter adapter;
+
 
     @Nullable
     @Override
@@ -65,20 +68,20 @@ public class HomeFragment extends Fragment {
         tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_speaker_notes_grey_24dp, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
-        tabfour = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
-        tabfour.setText("Profile");
-        tabfour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_person_grey_24dp, 0, 0);
-        tabLayout.getTabAt(3).setCustomView(tabfour);
+        tabFour = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
+        tabFour.setText("Profile");
+        tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_person_grey_24dp, 0, 0);
+        tabLayout.getTabAt(3).setCustomView(tabFour);
     }
 
     private void createViewPager(ViewPager viewPager) {
 
         //filling the adapter with fragments
-       ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
+        adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new MapFragment(), "Map");
-        adapter.addFrag(new QRScanFragment(), "Two");
-        adapter.addFrag(new HistoryFragment(), "Three");
-        adapter.addFrag(new ProfileFragment(), "Four");
+        adapter.addFrag(new QRScanFragment(), "QR Scanner");
+        adapter.addFrag(new HistoryFragment(), "History");
+        adapter.addFrag(new ProfileFragment(), "Profile");
         viewPager.setAdapter(adapter);
     }
 
@@ -106,8 +109,23 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            return super.getItemPosition(object);
+        }
+
+        @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+
+        @Override
+        public long getItemId(int position) {
+            return super.getItemId(position);
+        }
+    }
+
+    public void callMapFragment(){
+        MapFragment fragment=(MapFragment) adapter.getItem(0);
+        fragment.drawAllMarker();
     }
 }

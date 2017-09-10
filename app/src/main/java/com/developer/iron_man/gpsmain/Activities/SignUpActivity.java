@@ -1,10 +1,15 @@
 package com.developer.iron_man.gpsmain.Activities;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.ServiceConnection;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,15 +22,13 @@ import android.widget.Toast;
 import com.developer.iron_man.gpsmain.CompleteProfileActivity;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
-import com.google.gson.Gson;
+import com.developer.iron_man.gpsmain.Services.LocationService;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import models.QRModel;
 import models.User;
-import models.UserModel;
 import retrofit.APIServices;
 import retrofit.APIUtil;
 import retrofit2.Call;
@@ -39,7 +42,10 @@ import retrofit2.Response;
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText email, password,confirm_password;
-    TextView sign_in,sign_up,sign_in_text,sign_up_text;
+    public TextView sign_in;
+    public TextView sign_up;
+    public TextView sign_in_text;
+    public TextView sign_up_text;
     LinearLayout layout1,layout2;
     Button submit,signInButton;
     User user;
@@ -48,7 +54,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     PrefManager prefManager;
     ProgressDialog dialog;
 
-    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -174,8 +179,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         });
 
     }
-
-
 
 }
 

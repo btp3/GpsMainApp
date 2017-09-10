@@ -53,4 +53,35 @@ public class PrefManager {
         return pref.getString("user",null);
     }
 
+    public void setMarkers(String markers)
+    {
+        editor.putString("marker", markers);
+        editor.commit();
+    }
+
+    public String getMarkers(){
+        return pref.getString("marker",null);
+    }
+
+    public void setNotification_Flag(String flag)
+    {
+        editor.putString("flag", flag);
+        editor.commit();
+    }
+
+    public String getNotification_Flag(){
+        return pref.getString("flag",null);
+    }
+
+    public void setUsername(String username)
+    {
+        editor.putString("username", username);
+        editor.commit();
+    }
+
+    public String getUsername(){
+        return pref.getString("username",null);
+    }
+
+
 }

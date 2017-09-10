@@ -6,9 +6,11 @@ package retrofit;
 
 import com.google.gson.JsonObject;
 
+import models.ListVehicleLocations;
 import models.LocationModel;
 import models.QRModel;
 import models.User;
+import models.UserJourneyList;
 import models.UserModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -35,4 +37,11 @@ public interface APIServices {
 
     @GET("/api/accounts/users/{username}")
     Call<UserModel> getUserDetails(@Path("username") String username);
+
+    @GET("/api/location/nearby/{username}")
+    Call<ListVehicleLocations> getNearByCoordinates(@Path("username") String username);
+
+    @GET("/api/location/history/{username}")
+    Call<UserJourneyList> getUserHistory(@Path("username") String username);
+
 }

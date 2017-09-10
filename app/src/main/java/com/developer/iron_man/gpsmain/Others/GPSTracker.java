@@ -251,36 +251,6 @@ public class GPSTracker implements LocationListener {
 
     }
 
-    private void addNotification() {
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(mContext)
-                        .setSmallIcon(R.drawable.ic_location_on_black_24dp)
-                        .setContentTitle("Gps Tracker App")
-                        .setContentText("Are you travelling?");
-        NotificationManager mNotificationManager =
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Intent resultIntent = new Intent(mContext, MainActivity.class);
-
-        // Because clicking the notification opens a new ("special") activity, there's
-        // no need to create an artificial back stack.
-        PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(
-                        mContext,
-                        0,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        // mNotificationId is a unique integer your app uses to identify the
-        // notification. For example, to cancel the notification, you can pass its ID
-        // number to NotificationManager.cancel().
-        mNotificationManager.notify(1, mBuilder.build());
-
-    }
 
     private void getSpeed(Location location){
         double newTime= System.currentTimeMillis();

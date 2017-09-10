@@ -1,25 +1,30 @@
 package com.developer.iron_man.gpsmain.Services;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.developer.iron_man.gpsmain.Activities.LocationActivity;
+import com.developer.iron_man.gpsmain.Activities.MainActivity;
+import com.developer.iron_man.gpsmain.Activities.SplashActivity;
+import com.developer.iron_man.gpsmain.Activities.SplashActivity;
+import com.developer.iron_man.gpsmain.Others.PrefManager;
+import com.developer.iron_man.gpsmain.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
-
-import java.text.DecimalFormat;
-import java.util.concurrent.TimeUnit;
 
 import models.LocationModel;
 import retrofit.APIServices;
@@ -45,23 +50,15 @@ public class LocationService extends Service implements
     static double distance = 0;
     double speed;
     private APIServices mAPIService;
-
-
-    private final IBinder mBinder = new LocalBinder();
+    PrefManager prefManager;
+    
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        mAPIService= APIUtil.getAPIService();
-        createLocationRequest();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        mGoogleApiClient.connect();
-        return mBinder;
+        return null;
     }
+
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -73,8 +70,16 @@ public class LocationService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        return super.onStartCommand(intent, flags, startId);
+        mAPIService= APIUtil.getAPIService();
+        prefManager=new PrefManager(getApplication());
+        createLocationRequest();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+        return START_STICKY;
     }
 
 
@@ -88,13 +93,6 @@ public class LocationService extends Service implements
     }
 
 
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient,  this);
-        distance = 0;
-    }
-
-
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -103,7 +101,7 @@ public class LocationService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
-        LocationActivity.locate.dismiss();
+
         mCurrentLocation = location;
         if (lStart == null) {
             lStart = mCurrentLocation;
@@ -123,22 +121,10 @@ public class LocationService extends Service implements
 
     }
 
-    public class LocalBinder extends Binder {
-
-        public LocationService getService() {
-            return LocationService.this;
-        }
-
-
-    }
-
     //The live feed of Distance and Speed are being set in the method below .
     private void updateUI() {
-        if (LocationActivity.p == 0) {
+         {
             distance = distance + (lStart.distanceTo(lEnd) / 1000.00);
-            LocationActivity.endTime = System.currentTimeMillis();
-            long diff = LocationActivity.endTime - LocationActivity.startTime;
-            diff = TimeUnit.MILLISECONDS.toMinutes(diff);
 
             LocationModel locationModel=new LocationModel();
             locationModel.setLatitude(lEnd.getLatitude()+"");
@@ -146,35 +132,14 @@ public class LocationService extends Service implements
             locationModel.setSpeed(speed+"");
             locationModel.setLocType("user");
             locationModel.setTypeId(1);
-
-            //posting location model on the server
-            sendLocation(locationModel);
-
-            LocationActivity.time.setText("Total Time: " + diff + " minutes");
-            if (speed > 0.0)
-                LocationActivity.speed.setText("Current speed: " + new DecimalFormat("#.##").format(speed) + " km/hr");
-
-            else
-                LocationActivity.speed.setText(".......");
-
-            LocationActivity.dist.setText(new DecimalFormat("#.###").format(distance) + " Km's.");
-
+            if (speed > 5.0){
+                //posting location model on the server
+                sendLocation(locationModel);
+            }
             lStart = lEnd;
-
+            Log.e("Speed:",speed+"");
         }
 
-    }
-
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        stopLocationUpdates();
-        if (mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
-        lStart = null;
-        lEnd = null;
-        distance = 0;
-        return super.onUnbind(intent);
     }
 
     public void sendLocation(LocationModel locationModel){
@@ -194,5 +159,35 @@ public class LocationService extends Service implements
                 Log.e("SendLocation : ", "Unable to submit post to API.");
             }
         });
+    }
+
+    private void addNotification() {
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_location_on_black_24dp)
+                        .setContentTitle("Gps Tracker App")
+                        .setContentText("Are you travelling?");
+        NotificationManager mNotificationManager =
+                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+        // Because clicking the notification opens a new ("special") activity, there's
+        // no need to create an artificial back stack.
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        getApplicationContext(),
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        prefManager.setNotification_Flag("1");
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // mNotificationId is a unique integer your app uses to identify the
+        // notification. For example, to cancel the notification, you can pass its ID
+        // number to NotificationManager.cancel().
+        mNotificationManager.notify(1, mBuilder.build());
+
     }
 }
