@@ -33,5 +33,11 @@ public class Journey implements Serializable
         this.end = end;
     }
 
-
+    @Override
+    public String toString() {
+        return "Journey{" +
+                "start='" + start + '\'' +
+                ", end='" + end + '\'' +
+                '}';
+    }
 }

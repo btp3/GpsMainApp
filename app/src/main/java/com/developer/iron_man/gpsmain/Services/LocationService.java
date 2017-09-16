@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.developer.iron_man.gpsmain.Activities.MainActivity;
+import com.developer.iron_man.gpsmain.Activities.NotificationActivity;
 import com.developer.iron_man.gpsmain.Activities.SplashActivity;
 import com.developer.iron_man.gpsmain.Activities.SplashActivity;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
@@ -51,6 +53,7 @@ public class LocationService extends Service implements
     double speed;
     private APIServices mAPIService;
     PrefManager prefManager;
+    int check=0,source=0,timer;
     
 
     @Nullable
@@ -132,12 +135,60 @@ public class LocationService extends Service implements
             locationModel.setSpeed(speed+"");
             locationModel.setLocType("user");
             locationModel.setTypeId(1);
-            if (speed > 5.0){
-                //posting location model on the server
-                sendLocation(locationModel);
-            }
-            lStart = lEnd;
-            Log.e("Speed:",speed+"");
+
+             if(check==1)
+             {
+                 if(speed==0.0)
+                 {
+                     timer++;
+                     if(timer>=12)
+                     {
+                         sendLocation(new LocationModel("+1","+1",speed+"","user",1));
+                         prefManager.setLocationF(null);
+                         source=0;
+                         prefManager.setNotificationFlag(null);
+                         timer=0;
+                         check=0;
+                     }
+                 }
+                 else
+                 {
+                     if (speed > 5.0){
+
+                         //posting location model on the server
+                         timer=0;
+                         if(prefManager.getLocationF()!=null)
+                         {
+                                 sendLocation(locationModel);
+                         }
+                     }
+                 }
+             }
+             else
+
+             {
+                 if (speed > 5.0){
+
+                    if(prefManager.getNotificationFlag()==null)
+                     {
+                         addNotification();
+                         prefManager.setNotificationFlag("1");
+                     }
+                     if(prefManager.getLocationF()!=null)
+                     {
+                         if(source==0){
+                             sendLocation(new LocationModel("-1","-1",speed+"","user",1));
+                             check=1;
+                             source++;
+                         }
+                         else
+                             sendLocation(locationModel);
+                     }
+                 }
+             }
+
+             lStart = lEnd;
+
         }
 
     }
@@ -171,7 +222,7 @@ public class LocationService extends Service implements
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent resultIntent = new Intent(getApplicationContext(), NotificationActivity.class);
         // Because clicking the notification opens a new ("special") activity, there's
         // no need to create an artificial back stack.
         PendingIntent resultPendingIntent =
@@ -181,8 +232,10 @@ public class LocationService extends Service implements
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-        prefManager.setNotification_Flag("1");
+
         mBuilder.setContentIntent(resultPendingIntent);
+        Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.coins);
+        mBuilder.setSound(sound);
 
         // mNotificationId is a unique integer your app uses to identify the
         // notification. For example, to cancel the notification, you can pass its ID

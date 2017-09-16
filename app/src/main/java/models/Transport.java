@@ -44,5 +44,12 @@ public class Transport implements Serializable
         this.driver = driver;
     }
 
-
+    @Override
+    public String toString() {
+        return "Transport{" +
+                "gpsId=" + gpsId +
+                ", licensePlate='" + licensePlate + '\'' +
+                ", driver=" + driver +
+                '}';
+    }
 }

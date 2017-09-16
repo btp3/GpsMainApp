@@ -84,7 +84,7 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
         TextView source=holder.source;
         TextView dest=holder.dest;
 
-        weekday.setText(dataSet.get(position).getWeekday());
+        //weekday.setText(dataSet.get(position).getWeekday());
         date.setText(dataSet.get(position).getDate());
         time.setText(dataSet.get(position).getTime());
         vehicle.setText(dataSet.get(position).getVehicle_type());

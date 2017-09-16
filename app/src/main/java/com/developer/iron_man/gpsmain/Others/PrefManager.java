@@ -63,16 +63,6 @@ public class PrefManager {
         return pref.getString("marker",null);
     }
 
-    public void setNotification_Flag(String flag)
-    {
-        editor.putString("flag", flag);
-        editor.commit();
-    }
-
-    public String getNotification_Flag(){
-        return pref.getString("flag",null);
-    }
-
     public void setUsername(String username)
     {
         editor.putString("username", username);
@@ -81,6 +71,46 @@ public class PrefManager {
 
     public String getUsername(){
         return pref.getString("username",null);
+    }
+
+    public void setLocationF(String location)
+    {
+        editor.putString("location", location);
+        editor.commit();
+    }
+
+    public String getLocationF(){
+        return pref.getString("location",null);
+    }
+
+    public void setNotificationFlag(String notify)
+    {
+        editor.putString("notify", notify);
+        editor.commit();
+    }
+
+    public String getNotificationFlag(){
+        return pref.getString("notify",null);
+    }
+
+    public void setFragmentFlag(String frag)
+    {
+        editor.putString("frag", frag);
+        editor.commit();
+    }
+
+    public String getFragmentFlag(){
+        return pref.getString("frag",null);
+    }
+
+ public void setEmegencyContact(String flag)
+    {
+        editor.putString("emergencyContact", flag);
+        editor.commit();
+    }
+
+    public String getEmegencyContact(){
+        return pref.getString("emergencyContact",null);
     }
 
 

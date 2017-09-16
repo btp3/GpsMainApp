@@ -1,14 +1,14 @@
 package com.developer.iron_man.gpsmain.Activities;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -20,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,10 +29,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.developer.iron_man.gpsmain.Fragments.Fragment_three;
-import com.developer.iron_man.gpsmain.Fragments.Fragment_two;
+import com.developer.iron_man.gpsmain.Fragments.SettingsFragment;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
-import com.developer.iron_man.gpsmain.Fragments.MapFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
@@ -72,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
-    private static final String TAG_PHOTOS = "photos";
-    private static final String TAG_MOVIES = "movies";
-    private static final String TAG_NOTIFICATIONS = "notifications";
+    private static final String TAG_RATE = "rate";
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_HOME;
 
@@ -101,10 +96,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog=new ProgressDialog(MainActivity.this);
         Bundle bundle = getIntent().getExtras();
         dialog = ProgressDialog.show(MainActivity.this,null,"Loading...", true);
+
         if(pref.getUsername()==null)
-        getUserInfo(bundle.getString("username"),savedInstanceState);
+        {
+            getUserInfo(bundle.getString("username"),savedInstanceState);
+        }
+
         else
-        getUserInfo(pref.getUsername(),savedInstanceState);
+        {
+            getUserInfo(pref.getUsername(),savedInstanceState);
+            Log.e("Username:",pref.getUsername()+"");
+        }
+
+
 
     }
 
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Runnable UI_UPDATE_RUNNABLE = new Runnable() {
             @Override
             public void run() {
+
                 getLatestCoordinates(obj.getUsername());
                 UI_HANDLER.postDelayed(this, 10000);
             }
@@ -250,22 +255,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // home
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
-            case 1:
-                // photos
-                Fragment_two photosFragment = new Fragment_two();
-                return photosFragment;
             case 2:
-                // movies fragment
-                Fragment_three moviesFragment = new Fragment_three();
-                return moviesFragment;
-            case 3:
-                // notifications fragment
-                Fragment_three notificationsFragment = new Fragment_three();
-                return notificationsFragment;
-
-            case 4:
                 // settings fragment
-                Fragment_three settingsFragment = new Fragment_three();
+                SettingsFragment settingsFragment = new SettingsFragment();
                 return settingsFragment;
             default:
                 return new HomeFragment();
@@ -273,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setToolbarTitle() {
+        if(navItemIndex!=1)
         getSupportActionBar().setTitle(activityTitles[navItemIndex]);
     }
 
@@ -295,20 +288,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         break;
-                    case R.id.nav_photos:
+
+                    case R.id.nav_rateUs:
                         navItemIndex = 1;
-                        CURRENT_TAG = TAG_PHOTOS;
+                        //code for playStore
+
+                        Uri uri = Uri.parse("market://details?id=" + getApplicationContext().getPackageName());
+                        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                        // To count with Play market backStack, After pressing back button,
+                        // to taken back to our application, we need to add following flags to intent.
+                        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        try {
+                            startActivity(goToMarket);
+                        } catch (ActivityNotFoundException e) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("http://play.google.com/store/apps/details?id=" + getApplicationContext().getPackageName())));
+                        }
+
                         break;
-                    case R.id.nav_movies:
-                        navItemIndex = 2;
-                        CURRENT_TAG = TAG_MOVIES;
-                        break;
-                    case R.id.nav_notifications:
-                        navItemIndex = 3;
-                        CURRENT_TAG = TAG_NOTIFICATIONS;
-                        break;
+
                     case R.id.nav_settings:
-                        navItemIndex = 4;
+                        navItemIndex = 2;
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_about_us:
@@ -321,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
                         drawer.closeDrawers();
                         return true;
+
                     default:
                         navItemIndex = 0;
                 }
@@ -421,6 +424,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 pref.setUser(null);
                 logout.setVisibility(View.GONE);
+                pref.setFragmentFlag(null);
                 startActivity(new Intent(this,SignUpActivity.class));
                 finish();
         }
@@ -498,8 +502,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Gson g=new Gson();
                     String locations=g.toJson(response.body());
                     pref.setMarkers(locations);
+                    if(pref.getFragmentFlag()!=null){
                     HomeFragment fragment=(HomeFragment)getSupportFragmentManager().findFragmentByTag(TAG_HOME);
+                        if(fragment!=null)
                     fragment.callMapFragment();
+                    }
                 }
             }
 
@@ -512,17 +519,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    void createAlert(){
-
-        pref.setNotification_Flag(null);
-        LayoutInflater li = LayoutInflater.from(getApplicationContext());
-        View promptsView = li.inflate(R.layout.travelling_alert_layout, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this,R.style.MyDialogTheme);
-        alertDialogBuilder.setView(promptsView);
-        alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-
-    }
 }
 

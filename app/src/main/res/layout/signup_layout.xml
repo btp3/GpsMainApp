@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/tf"
+    android:background="@drawable/traffic2"
     android:gravity="center">
 
     <TextView
@@ -11,7 +11,7 @@
         android:text="@string/sign_up"
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
-        android:textSize="15dp"
+        android:textSize="20sp"
         android:id="@+id/sign_up_text"
         android:layout_centerHorizontal="true"
         />
@@ -40,6 +40,7 @@
         android:textColor="@color/black"
         android:layout_marginTop="65dp"
         android:paddingTop="25dp"
+        android:drawableLeft="@drawable/ic_email_grey_24dp"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="35dp"
         android:paddingLeft="15dp"
@@ -60,6 +61,7 @@
         android:textColor="@color/black"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
+        android:drawableLeft="@drawable/ic_lock_grey_24dp"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="35dp"
         android:paddingLeft="15dp"
@@ -78,6 +80,7 @@
         android:textSize="12dp"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
+        android:drawableLeft="@drawable/ic_lock_grey_24dp"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="35dp"
         android:layout_marginTop="0.1dp"
@@ -153,7 +156,7 @@
         android:weightSum="100"
         android:gravity="center_vertical"
         android:layout_marginTop="15dp"
-       >
+        >
 
 
         <Button
@@ -162,7 +165,8 @@
             android:text="@string/sign_up"
             android:layout_below="@+id/password"
             android:layout_weight="50"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/ripple"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:textColor="@color/colorAccent"
             android:layout_gravity="center"
             android:minHeight="35dp"
@@ -182,7 +186,7 @@
                 android:text="@string/already_reg"
                 android:id="@+id/already_text"
                 android:textColor="@color/colorAccent"
-                android:textSize="9dp"
+                android:textSize="12sp"
                 android:layout_gravity="right"/>
 
             <TextView
@@ -193,7 +197,7 @@
                 android:id="@+id/sign_in"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
-                android:textSize="12dp"
+                android:textSize="15sp"
                 android:layout_gravity="right"
                 />
 

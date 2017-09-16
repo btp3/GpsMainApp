@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 
 import java.util.ArrayList;
@@ -33,16 +34,16 @@ public class HomeFragment extends Fragment {
     TextView tabThree;
     TextView tabFour;
     ViewPagerAdapter adapter;
+    PrefManager pref;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.activity_main_layout,container,false);
-
+        pref=new PrefManager(getActivity());
         viewPager = (ViewPager)view.findViewById(R.id.view_pager);
         createViewPager(viewPager);
-
         tabLayout = (TabLayout)view.findViewById(R.id.tab_host);
         tabLayout.setupWithViewPager(viewPager);
         setUpText();

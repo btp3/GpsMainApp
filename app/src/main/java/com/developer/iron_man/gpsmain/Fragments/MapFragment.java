@@ -57,6 +57,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.layout_map, container, false);
         pref=new PrefManager(getActivity());
+        pref.setFragmentFlag("1");
         return view;
     }
 
@@ -133,6 +134,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void drawAllMarker(){
+        Log.e("Working","Working");
         Gson gson = new Gson();
         String m = pref.getMarkers();
         if(m!=null)

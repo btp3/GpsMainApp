@@ -73,7 +73,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mAPIService= APIUtil.getAPIService();
         prefManager=new PrefManager(getApplicationContext());
         dialog=new ProgressDialog(SignUpActivity.this);
-
+        prefManager.setUser(null);
         // Creating a User with information provided by the user
         user = new User();
 

@@ -24,6 +24,16 @@ public class LocationModel implements Serializable
     private long typeId;
     private final static long serialVersionUID = -9080877836218750667L;
 
+    public LocationModel(String latitude, String longitude, String speed, String locType, long typeId) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.speed = speed;
+        this.locType = locType;
+        this.typeId = typeId;
+    }
+
+    public LocationModel() {
+    }
 
     public String getLatitude() {
         return latitude;

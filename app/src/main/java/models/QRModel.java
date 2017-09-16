@@ -1,82 +1,46 @@
 package models;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-public class QRModel {
+public class QRModel implements Serializable
+{
 
-    private String dname;
-    private String dcontact;
-    private String daddress;
-    private String dlicense;
-    private String daadhar;
-    private String dphoto;
-    private String dscan;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    @SerializedName("gps_id")
+    @Expose
+    private int gpsId;
+    @SerializedName("license_plate")
+    @Expose
+    private String licensePlate;
+    @SerializedName("driver")
+    @Expose
+    private Driver driver;
+    private final static long serialVersionUID = 730909875711130337L;
 
-    public String getDname() {
-        return dname;
+    public int getGpsId() {
+        return gpsId;
     }
 
-    public void setDname(String dname) {
-        this.dname = dname;
+    public void setGpsId(int gpsId) {
+        this.gpsId = gpsId;
     }
 
-    public String getDcontact() {
-        return dcontact;
+    public String getLicensePlate() {
+        return licensePlate;
     }
 
-    public void setDcontact(String dcontact) {
-        this.dcontact = dcontact;
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 
-    public String getDaddress() {
-        return daddress;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setDaddress(String daddress) {
-        this.daddress = daddress;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 
-    public String getDlicense() {
-        return dlicense;
-    }
-
-    public void setDlicense(String dlicense) {
-        this.dlicense = dlicense;
-    }
-
-    public String getDaadhar() {
-        return daadhar;
-    }
-
-    public void setDaadhar(String daadhar) {
-        this.daadhar = daadhar;
-    }
-
-    public String getDphoto() {
-        return dphoto;
-    }
-
-    public void setDphoto(String dphoto) {
-        this.dphoto = dphoto;
-    }
-
-    public String getDscan() {
-        return dscan;
-    }
-
-    public void setDscan(String dscan) {
-        this.dscan = dscan;
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
 
 }
-

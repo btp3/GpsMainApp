@@ -6,7 +6,7 @@ package models;
 
 public class History {
 
-    String weekday;
+    //String weekday;
     String date;
     String time;
     String vehicle_type;
@@ -14,8 +14,7 @@ public class History {
     String source;
     String dest;
 
-    public History(String weekday, String date, String time, String vehicle_type, String vehicle_num, String source, String dest) {
-        this.weekday = weekday;
+    public History(String date, String time, String vehicle_type, String vehicle_num, String source, String dest) {
         this.date = date;
         this.time = time;
         this.vehicle_type = vehicle_type;
@@ -23,14 +22,14 @@ public class History {
         this.source = source;
         this.dest = dest;
     }
-
-    public String getWeekday() {
-        return weekday;
-    }
-
-    public void setWeekday(String weekday) {
-        this.weekday = weekday;
-    }
+//
+//    public String getWeekday() {
+//        return weekday;
+//    }
+//
+//    public void setWeekday(String weekday) {
+//        this.weekday = weekday;
+//    }
 
     public String getDate() {
         return date;

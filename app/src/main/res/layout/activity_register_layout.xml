@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/tf">
+    android:background="@drawable/traffic2">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,10 +26,6 @@
                 android:layout_marginTop="?attr/actionBarSize"
                 android:layout_centerHorizontal="true" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/image"/>
 
             <EditText
                 android:layout_width="match_parent"

@@ -1,10 +1,9 @@
 package models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class UserJourneyList implements Serializable
 {
@@ -14,11 +13,11 @@ public class UserJourneyList implements Serializable
     private String username;
     @SerializedName("transport")
     @Expose
-    private List<Transport> transport = null;
+    private List<List<Transport>> transport = null;
     @SerializedName("journey")
     @Expose
     private List<Journey> journey = null;
-    private final static long serialVersionUID = -5591394370914825604L;
+    private final static long serialVersionUID = -4462001644332020067L;
 
     public String getUsername() {
         return username;
@@ -28,11 +27,11 @@ public class UserJourneyList implements Serializable
         this.username = username;
     }
 
-    public List<Transport> getTransport() {
+    public List<List<Transport>> getTransport() {
         return transport;
     }
 
-    public void setTransport(List<Transport> transport) {
+    public void setTransport(List<List<Transport>> transport) {
         this.transport = transport;
     }
 
@@ -44,5 +43,12 @@ public class UserJourneyList implements Serializable
         this.journey = journey;
     }
 
-
+    @Override
+    public String toString() {
+        return "UserJourneyList{" +
+                "username='" + username + '\'' +
+                ", transport=" + transport +
+                ", journey=" + journey +
+                '}';
+    }
 }

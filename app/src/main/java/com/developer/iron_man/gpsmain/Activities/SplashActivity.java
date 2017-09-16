@@ -4,11 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.developer.iron_man.gpsmain.Services.LocationService;
 
@@ -21,14 +23,16 @@ public class SplashActivity extends AppCompatActivity {
     LocationManager locationManager;
     public static long startTime;
     public static TextView text;
+    PrefManager prefManager;
+    private final int SPLASH_DISPLAY_LENGTH = 3000;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_layout);
-        text=(TextView)findViewById(R.id.speed);
         startTime = System.currentTimeMillis();
+        prefManager=new PrefManager(getApplicationContext());
         startLocationService();
     }
 
@@ -56,8 +60,19 @@ public class SplashActivity extends AppCompatActivity {
 
         //Here, the Location Service gets bound and the GPS Speedometer gets Active.
         startService(new Intent(this,LocationService.class));
-        startActivity(new Intent(this,SignUpActivity.class));
-        finish();
+
+        new Handler().postDelayed(new Runnable(){
+            @Override
+            public void run() {
+                /* Create an Intent that will start the Menu-Activity. */
+                if(prefManager.getUsername()==null)
+                    startActivity(new Intent(SplashActivity.this,SignUpActivity.class));
+                else
+                    startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                finish();
+            }
+        }, SPLASH_DISPLAY_LENGTH);
+
     }
 
     //This method configures the Alert Dialog box.
