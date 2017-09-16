@@ -37,9 +37,7 @@
         <activity android:name=".Activities.RegisterActivity"></activity>
         <activity android:name=".Activities.MainActivity"></activity>
         <activity android:name=".Activities.SignUpActivity"></activity>
-
-
-
+        <activity android:name=".Activities.NotificationActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

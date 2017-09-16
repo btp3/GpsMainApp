@@ -113,5 +113,15 @@ public class PrefManager {
         return pref.getString("emergencyContact",null);
     }
 
+    public void setUserId(String id)
+    {
+        editor.putString("id", id);
+        editor.commit();
+    }
+
+    public String getUserId(){
+        return pref.getString("id",null);
+    }
+
 
 }

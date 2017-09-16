@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -20,6 +21,8 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
     Button sendLocation,notSendLocation;
     PrefManager prefManager;
+    public static int p=0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +40,12 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         switch (v.getId())
         {
             case R.id.send_location:
-                                    prefManager.setLocationF("1");
-                                    startActivity(new Intent(NotificationActivity.this,MainActivity.class));
-                                    finish();
+                p=1;
+                startActivity(new Intent(NotificationActivity.this,MainActivity.class));
+                finish();
             case R.id.not_send_location:
-                                        prefManager.setLocationF(null);
-                                        sendSMS("","");
-                                        finish();
+                prefManager.setLocationF(null);
+                finish();
         }
     }
 

@@ -44,13 +44,15 @@ public class ProfileFragment extends Fragment {
     private View view;
     PrefManager pref;
     UserModel obj;
-    MyTextView name,state;
     ImageView profileImage;
     EditText number1,number2,number3;
-    TextView saveNumbers,addNumbers;
-    LinearLayout profileDetail,editProfile,addNumberLayout,buttons;
+    Button saveNumbers,addNumbers;
+    LinearLayout profileDetail,addNumberLayout;
     APIServices apiServices;
     ContactCreateModel contactCreateModel;
+    EditText address,phone,aadhar,email;
+    TextView name;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,26 +60,35 @@ public class ProfileFragment extends Fragment {
         pref=new PrefManager(getActivity());
         apiServices = APIUtil.getAPIService();
         pref.setFragmentFlag(null);
-        name=(MyTextView)view.findViewById(R.id.profile_name);
+
+        name=(TextView)view.findViewById(R.id.profile_name);
+        address=(EditText)view.findViewById(R.id.profile_address);
+        email=(EditText)view.findViewById(R.id.email);
+        phone=(EditText)view.findViewById(R.id.profile_contact);
+        aadhar=(EditText)view.findViewById(R.id.profile_aadhar);
         profileImage=(ImageView)view.findViewById(R.id.profile_image);
+
+
         number1 = (EditText)view.findViewById(R.id.contact1);
         number2 = (EditText)view.findViewById(R.id.contact2);
         number3 = (EditText)view.findViewById(R.id.contact3);
+
         if(pref.getEmegencyContact()!=null){
             String[] s = pref.getEmegencyContact().split(";");
             number1.setText(s[0]);
             number2.setText(s[1]);
             number3.setText(s[2]);
         }
-        saveNumbers = (TextView)view.findViewById(R.id.save_numbers);
-        addNumbers = (TextView)view.findViewById(R.id.add_phones);
-        profileDetail = (LinearLayout)view.findViewById(R.id.detail_profile);
-        editProfile = (LinearLayout)view.findViewById(R.id.edit_profile_layout);
-        addNumberLayout = (LinearLayout)view.findViewById(R.id.add_phones_layout);
-        buttons = (LinearLayout)view.findViewById(R.id.buttons);
+
+        saveNumbers = (Button) view.findViewById(R.id.save_numbers);
+        addNumbers = (Button) view.findViewById(R.id.add_phones);
+        profileDetail = (LinearLayout)view.findViewById(R.id.profile_layout);
+        addNumberLayout = (LinearLayout)view.findViewById(R.id.number_layout);
         contactCreateModel = new ContactCreateModel();
         contactCreateModel.setUsername(pref.getUsername());
-        state=(MyTextView) view.findViewById(R.id.profile_address);
+
+
+
 
         //Getting user details
         Gson gson = new Gson();
@@ -85,23 +96,28 @@ public class ProfileFragment extends Fragment {
         obj = gson.fromJson(user, UserModel.class);
 
         name.setText(obj.getName());
-        String address[]=obj.getAddress().split(",");
-        int l=address.length;
-        state.setText(address[l-2]+","+address[l-1]);
+        address.setText(obj.getAddress());
+        email.setText(obj.getEmail());
+        aadhar.setText(obj.getAadhar());
+        phone.setText(obj.getContact());
         loadProfileImage();
 
         addNumbers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttons.setVisibility(View.GONE);
+
                 addNumberLayout.setVisibility(View.VISIBLE);
                 profileDetail.setVisibility(View.GONE);
+                addNumbers.setVisibility(View.GONE);
+                saveNumbers.setVisibility(View.VISIBLE);
 
             }
         });
+
         saveNumbers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String nums = "";
                 nums += number1.getText().toString()+";";
                 nums += number2.getText().toString()+";";
@@ -116,11 +132,13 @@ public class ProfileFragment extends Fragment {
                     updateCurrentContacts(updateContactsModel);
                 }
 
-                buttons.setVisibility(View.VISIBLE);
                 addNumberLayout.setVisibility(View.GONE);
                 profileDetail.setVisibility(View.VISIBLE);
+                addNumbers.setVisibility(View.VISIBLE);
+                saveNumbers.setVisibility(View.GONE);
             }
         });
+
         return view;
     }
 

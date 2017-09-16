@@ -8,11 +8,21 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.developer.iron_man.gpsmain.Others.GPSTracker;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.developer.iron_man.gpsmain.Services.LocationService;
+import com.google.gson.Gson;
+
+import models.LocationModel;
+import retrofit.APIServices;
+import retrofit.APIUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by sagar on 7/9/17.
@@ -26,13 +36,19 @@ public class SplashActivity extends AppCompatActivity {
     PrefManager prefManager;
     private final int SPLASH_DISPLAY_LENGTH = 3000;
 
+    private APIServices mAPIService;
+    GPSTracker gpsTracker;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_layout);
+        mAPIService= APIUtil.getAPIService();
+        gpsTracker=new GPSTracker(getApplicationContext());
         startTime = System.currentTimeMillis();
         prefManager=new PrefManager(getApplicationContext());
+        prefManager.setNotificationFlag(null);
         startLocationService();
     }
 
@@ -59,7 +75,8 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         //Here, the Location Service gets bound and the GPS Speedometer gets Active.
-        startService(new Intent(this,LocationService.class));
+       startService(new Intent(this,LocationService.class));
+
 
         new Handler().postDelayed(new Runnable(){
             @Override
@@ -96,5 +113,24 @@ public class SplashActivity extends AppCompatActivity {
                 });
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+    }
+
+    public void sendLocation(LocationModel locationModel){
+        Gson g = new Gson();
+        Log.e("In sendLocation : ", g.toJson(locationModel));
+        mAPIService.savePost(locationModel).enqueue(new Callback<LocationModel>() {
+            @Override
+            public void onResponse(Call<LocationModel> call, Response<LocationModel> response) {
+                Log.e("In response : ", response.toString());
+                if(response.isSuccessful()) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LocationModel> call, Throwable t) {
+                Log.e("SendLocation : ", "Unable to submit post to API.");
+            }
+        });
     }
 }

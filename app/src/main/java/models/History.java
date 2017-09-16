@@ -1,5 +1,10 @@
 package models;
 
+import android.graphics.Bitmap;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 /**
  * Created by sagar on 2/8/17.
  */
@@ -13,23 +18,17 @@ public class History {
     String vehicle_num;
     String source;
     String dest;
+    ByteArrayOutputStream image;
 
-    public History(String date, String time, String vehicle_type, String vehicle_num, String source, String dest) {
+    public History(String date, String time, String vehicle_type, String vehicle_num, String source, String dest,ByteArrayOutputStream image) {
         this.date = date;
         this.time = time;
         this.vehicle_type = vehicle_type;
         this.vehicle_num = vehicle_num;
         this.source = source;
         this.dest = dest;
+        this.image=image;
     }
-//
-//    public String getWeekday() {
-//        return weekday;
-//    }
-//
-//    public void setWeekday(String weekday) {
-//        this.weekday = weekday;
-//    }
 
     public String getDate() {
         return date;
@@ -75,6 +74,12 @@ public class History {
         return dest;
     }
 
+    public ByteArrayOutputStream getImage() {
+        return image;
+    }
+    public void setImage(ByteArrayOutputStream image) {
+        this.image = image;
+    }
     public void setDest(String dest) {
         this.dest = dest;
     }

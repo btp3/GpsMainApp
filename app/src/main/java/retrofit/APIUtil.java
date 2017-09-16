@@ -10,6 +10,6 @@ public class APIUtil {
 
     public static APIServices getAPIService() {
 
-        return ServiceGenerator.createService(APIServices.class,"amar","baikunth");
+        return ServiceGenerator.createService(APIServices.class,"btp3","sharma@007");
     }
 }

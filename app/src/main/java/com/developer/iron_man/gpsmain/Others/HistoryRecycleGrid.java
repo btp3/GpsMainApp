@@ -1,12 +1,15 @@
 package com.developer.iron_man.gpsmain.Others;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.developer.iron_man.gpsmain.R;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import models.History;
@@ -42,17 +48,18 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
         TextView veh_num;
         TextView source;
         TextView dest;
+        ImageView image;
 
         public MyHolder(View itemView)
         {
             super(itemView);
-            this.weekday = (TextView) itemView.findViewById(R.id.week);
             this.date = (TextView) itemView.findViewById(R.id.date);
             this.time=(TextView) itemView.findViewById(R.id.time);
             this.vehicle=(TextView)itemView.findViewById(R.id.vehicle_type);
             this.veh_num=(TextView)itemView.findViewById(R.id.vehicle_num);
             this.source=(TextView)itemView.findViewById(R.id.source);
             this.dest=(TextView)itemView.findViewById(R.id.dest);
+            this.image=(ImageView)itemView.findViewById(R.id.driver_image);
         }
     }
 
@@ -76,13 +83,13 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
     @Override
     public void onBindViewHolder(MyHolder holder, final int position) {
 
-        TextView weekday=holder.weekday;
         TextView date=holder.date;
         TextView time=holder.time;
         TextView vehicle=holder.vehicle;
         TextView veh_num=holder.veh_num;
         TextView source=holder.source;
         TextView dest=holder.dest;
+        ImageView driver_image=holder.image;
 
         //weekday.setText(dataSet.get(position).getWeekday());
         date.setText(dataSet.get(position).getDate());
@@ -92,12 +99,22 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
         source.setText(dataSet.get(position).getSource());
         dest.setText(dataSet.get(position).getDest());
 
+        Glide.with(context)
+                .load(dataSet.get(position).getImage().toByteArray())
+                .asBitmap()
+                .thumbnail(0.5f)
+                .transform(new CircleTrasform(context))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(driver_image);
+
         }
 
     @Override
     public int getItemCount() {
         return dataSet.size();
     }
+
+
 
 }
 

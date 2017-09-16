@@ -1,5 +1,8 @@
 package com.developer.iron_man.gpsmain.Fragments;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -8,25 +11,30 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.developer.iron_man.gpsmain.Activities.MainActivity;
 import com.developer.iron_man.gpsmain.Others.HistoryRecycleGrid;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import models.Driver;
 import models.History;
 import models.Journey;
 import models.ListVehicleLocations;
+import models.QRModel;
 import models.Transport;
 import models.UserJourneyList;
 import retrofit.APIServices;
@@ -45,12 +53,16 @@ public class HistoryFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     HistoryRecycleGrid adapter;
     RecyclerView recyclerView;
-    List<History> historyList;
+    List<History> historyList=new ArrayList<>();
     APIServices mApiService;
     PrefManager prefManager;
     List<List<Transport>> listOfTransportList;
     List<Transport> transportList;
     List<Journey> journeyList;
+    int gps_id;
+    String dest,source,da,ti;
+    String lic_plate;
+    ProgressDialog dialog;
 
     @Nullable
     @Override
@@ -66,6 +78,7 @@ public class HistoryFragment extends Fragment {
         mApiService= APIUtil.getAPIService();
         prefManager=new PrefManager(getActivity());
         prefManager.setFragmentFlag(null);
+        historyList.clear();
         getCards(prefManager.getUsername());
 
         return view;
@@ -73,7 +86,7 @@ public class HistoryFragment extends Fragment {
 
     public void getCards(String username){
 
-        historyList=new ArrayList<>();
+
 
 
         mApiService.getUserHistory(username).enqueue(new Callback<UserJourneyList>() {
@@ -84,34 +97,43 @@ public class HistoryFragment extends Fragment {
                 String cord[] = new String[2];
                 String time[] =  new String[2];
                 String date[] = new String[3];
-                String ti , da;
                 if(response.isSuccessful()) {
 
                     listOfTransportList=response.body().getTransport();
                     journeyList=response.body().getJourney();
 
-                    for(int i=0;i<journeyList.size();i++)
-                    {
-                        Log.e(" journey get i ",journeyList.get(i).getStart());
-                        slash = (journeyList.get(i).getStart()).split("-");
-                        Log.e("slash ",slash[0]+"  "+slash[1]+ " "+slash[2]);
-                        transportList = listOfTransportList.get(i);
-                        cord = slash[0].split(":");
+                    if(journeyList.size()>0&&listOfTransportList.size()>0)
 
-                        Log.e("cord",cord[0]+"  "+cord[1]);
-                        String source=getAddress(Double.parseDouble(cord[0]),Double.parseDouble(cord[1]));
-                        time = slash[1].split(",");
-                        date = slash[2].split(",");
-                        ti = time[0]+":"+time[1];
-                        da = date[2]+"/"+date[1]+"/"+date[0]+" ";
-                        slash = (journeyList.get(i).getEnd()).split("-");
-                        cord = slash[0].split(":");
-                        String dest=getAddress(Double.parseDouble(cord[0]),Double.parseDouble(cord[1]));
-                        for(int j=0;j<transportList.size();j++)
-                        historyList.add(new History(da,ti,"Auto",transportList.get(j).getLicensePlate(),source,dest));
+                    {
+                        for(int i=0;i<journeyList.size();i++)
+                        {
+                            Log.e(" journey get i ",journeyList.get(i).getStart());
+                            slash = (journeyList.get(i).getStart()).split("-");
+                            Log.e("slash ",slash[0]+"  "+slash[1]+ " "+slash[2]);
+                            transportList = listOfTransportList.get(i);
+                            cord = slash[0].split(":");
+
+                            Log.e("cord",cord[0]+"  "+cord[1]);
+                            source=getAddress(Double.parseDouble(cord[0]),Double.parseDouble(cord[1]));
+                            time = slash[1].split(",");
+                            date = slash[2].split(",");
+                            ti = time[0]+":"+time[1];
+                            da = date[2]+"/"+date[1]+"/"+date[0]+" ";
+                            slash = (journeyList.get(i).getEnd()).split("-");
+                            cord = slash[0].split(":");
+                            dest=getAddress(Double.parseDouble(cord[0]),Double.parseDouble(cord[1]));
+                            for(int j=0;j<transportList.size();j++)
+                            {
+                                Driver driver=transportList.get(j).getDriver();
+                                String image=driver.getDphoto();
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                getImage(image).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                historyList.add(new History(da,ti,"Auto",lic_plate,source,dest,stream));
+                            }
+                        }
+                        adapter=new HistoryRecycleGrid(getActivity(), historyList);
+                        recyclerView.setAdapter(adapter);
                     }
-                    adapter=new HistoryRecycleGrid(getActivity(), historyList);
-                    recyclerView.setAdapter(adapter);
                 }
             }
 
@@ -134,22 +156,28 @@ public class HistoryFragment extends Fragment {
             add = " ";
             add = add + obj.getAddressLine(0);
             //add = add + "\n" + obj.getCountryName();
-           // add = add + "\n" + obj.getCountryCode();
+            // add = add + "\n" + obj.getCountryCode();
 
-           // add = add + "\n" + obj.getPostalCode();
-           // add = add + "\n" + obj.getSubAdminArea();
+            // add = add + "\n" + obj.getPostalCode();
+            // add = add + "\n" + obj.getSubAdminArea();
             add = add + ", " + obj.getLocality();
             add = add + ", " + obj.getAdminArea();
-           // add = add + "\n" + obj.getSubThoroughfare();
+            // add = add + "\n" + obj.getSubThoroughfare();
 
-            Log.e("IGA", "Address" + add);
-            
+
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+
         }
 
-       return add;
+        return add;
+    }
+
+    public Bitmap getImage(String encodedimage){
+        byte[] decodedString = Base64.decode(encodedimage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
     }
 }

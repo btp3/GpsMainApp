@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +33,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.developer.iron_man.gpsmain.Fragments.SettingsFragment;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
+import com.developer.iron_man.gpsmain.Others.GPSTracker;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.google.gson.Gson;
@@ -39,6 +41,7 @@ import com.google.gson.Gson;
 import java.io.ByteArrayOutputStream;
 
 import models.ListVehicleLocations;
+import models.LocationModel;
 import models.UserModel;
 import retrofit.APIServices;
 import retrofit.APIUtil;
@@ -61,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     // urls to load navigation header background image
-    // and profile image
     private static final String urlNavHeaderBg = "http://api.androidhive.info/images/nav-menu-header-bg.jpg";
 
     // index to identify current nav menu item
@@ -83,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     UserModel obj;
     APIServices mApiService;
     ProgressDialog dialog;
-
-    AlertDialog alertDialog;
+    public static TextView t,sp;
+    GPSTracker gpsTracker;
 
 
     @Override
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mApiService= APIUtil.getAPIService();
+        gpsTracker=new GPSTracker(getApplicationContext());
         pref=new PrefManager(getApplicationContext());
         dialog=new ProgressDialog(MainActivity.this);
         Bundle bundle = getIntent().getExtras();
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else
         {
             getUserInfo(pref.getUsername(),savedInstanceState);
-            Log.e("Username:",pref.getUsername()+"");
+
         }
 
 
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
         logout=(TextView)toolbar.findViewById(R.id.logout);
         setSupportActionBar(toolbar);
 
@@ -143,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             obj = gson.fromJson(u, UserModel.class);
             logout.setVisibility(View.VISIBLE);
             pref.setUsername(obj.getUsername());
+            pref.setUserId(obj.getUserId());
+
+            sendLocation(new LocationModel(gpsTracker.getLocation().getLatitude()+"",gpsTracker.getLocation().getLongitude()+"",0.0+"","user",pref.getUserId()));
         }
 
         // load nav menu header data
@@ -164,11 +171,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
 
                 getLatestCoordinates(obj.getUsername());
-                UI_HANDLER.postDelayed(this, 10000);
+                UI_HANDLER.postDelayed(this, 1500);
             }
         };
 
-        UI_HANDLER.postDelayed(UI_UPDATE_RUNNABLE, 10000);
+        UI_HANDLER.postDelayed(UI_UPDATE_RUNNABLE, 1500);
 
         logout.setOnClickListener(this);
     }
@@ -266,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setToolbarTitle() {
         if(navItemIndex!=1)
-        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
+            getSupportActionBar().setTitle(activityTitles[navItemIndex]);
     }
 
     private void selectNavMenu() {
@@ -423,6 +430,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.logout:
 
                 pref.setUser(null);
+                pref.setUserId(null);
+                pref.setUsername(null);
+                pref.setEmegencyContact(null);
                 logout.setVisibility(View.GONE);
                 pref.setFragmentFlag(null);
                 startActivity(new Intent(this,SignUpActivity.class));
@@ -457,6 +467,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<UserModel> call, Throwable t) {
 
                 Toast.makeText(getApplicationContext(), "Sign In Failed", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
 
             }
         });
@@ -483,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onFailure(Call<ListVehicleLocations> call, Throwable t) {
 
-                Toast.makeText(getApplicationContext(), "Nearby vehicles coordinates failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Nearby vehicles coordinates fetch failed", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -503,9 +514,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String locations=g.toJson(response.body());
                     pref.setMarkers(locations);
                     if(pref.getFragmentFlag()!=null){
-                    HomeFragment fragment=(HomeFragment)getSupportFragmentManager().findFragmentByTag(TAG_HOME);
+                        HomeFragment fragment=(HomeFragment)getSupportFragmentManager().findFragmentByTag(TAG_HOME);
                         if(fragment!=null)
-                    fragment.callMapFragment();
+                            fragment.callMapFragment();
                     }
                 }
             }
@@ -519,5 +530,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        pref.setNotificationFlag(null);
+    }
+
+    public void sendLocation(LocationModel locationModel){
+        Gson g = new Gson();
+
+        mApiService.savePost(locationModel).enqueue(new Callback<LocationModel>() {
+            @Override
+            public void onResponse(Call<LocationModel> call, Response<LocationModel> response) {
+                Log.e("In response : ", response.toString());
+                if(response.isSuccessful()) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LocationModel> call, Throwable t) {
+                Log.e("SendLocation : ", "Unable to submit post to API.");
+            }
+        });
+    }
 }
 

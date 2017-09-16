@@ -2,9 +2,12 @@ package com.developer.iron_man.gpsmain.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.developer.iron_man.gpsmain.Others.CircleTrasform;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
 import com.developer.iron_man.gpsmain.R;
 import com.google.android.gms.drive.Drive;
@@ -23,6 +29,8 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 
 import models.Driver;
 import models.LocationModel;
@@ -133,6 +141,17 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
                     address.setText(""+driver.getDaddress());
                     aadhar.setText("Aadhar Number : "+driver.getDaadhar());
                     licence_no.setText("Driving License No : "+driver.getDlicense());
+
+                    // Loading profile image
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    getImage(driver.getDphoto()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    Glide.with(getActivity())
+                            .load(stream.toByteArray())
+                            .asBitmap()
+                            .thumbnail(0.5f)
+                            .transform(new CircleTrasform(getActivity()))
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(photo);
                     info.setVisibility(View.VISIBLE);
                 }
             }
@@ -145,5 +164,11 @@ public class QRScanFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+    }
+
+    public Bitmap getImage(String encodedimage){
+        byte[] decodedString = Base64.decode(encodedimage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
     }
 }

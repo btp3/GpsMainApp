@@ -9,9 +9,11 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,6 +37,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.developer.iron_man.gpsmain.Activities.MainActivity.sp;
+import static com.developer.iron_man.gpsmain.Activities.MainActivity.t;
+import static com.developer.iron_man.gpsmain.Activities.NotificationActivity.p;
+
 /**
  * Created by sagar on 21/8/17.
  */
@@ -53,7 +59,29 @@ public class LocationService extends Service implements
     double speed;
     private APIServices mAPIService;
     PrefManager prefManager;
-    int check=0,source=0,timer;
+    int check=0,source=0;
+    int flag=1;
+
+    CountDownTimer ct= new CountDownTimer(60000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            Toast.makeText(getApplication(),millisUntilFinished/1000+" sec left",Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onFinish() {
+
+            sendLocation(new LocationModel("+1","+1",speed+"","user",prefManager.getUserId()));
+            Toast.makeText(getApplication(),"JourneyEnded",Toast.LENGTH_SHORT).show();
+            source=0;
+            prefManager.setNotificationFlag(null);
+            ct.cancel();
+            check=0;
+            p=0;
+        }
+    };
     
 
     @Nullable
@@ -113,6 +141,7 @@ public class LocationService extends Service implements
             lEnd = mCurrentLocation;
 
         //Calling the method below updates the  live values of distance and speed to the TextViews.
+        if(prefManager.getUser()!=null)
         updateUI();
         //calculating the speed with getSpeed method it returns speed in m/s so we are converting it into kmph
         speed = location.getSpeed() * 18 / 5;
@@ -134,32 +163,26 @@ public class LocationService extends Service implements
             locationModel.setLongitude(lEnd.getLongitude()+"");
             locationModel.setSpeed(speed+"");
             locationModel.setLocType("user");
-            locationModel.setTypeId(1);
+            locationModel.setTypeId((prefManager.getUserId()));
 
              if(check==1)
              {
-                 if(speed==0.0)
+                 if(speed<5.0&&flag==1)
                  {
-                     timer++;
-                     if(timer>=12)
-                     {
-                         sendLocation(new LocationModel("+1","+1",speed+"","user",1));
-                         prefManager.setLocationF(null);
-                         source=0;
-                         prefManager.setNotificationFlag(null);
-                         timer=0;
-                         check=0;
-                     }
+                     flag=0;
+                     ct.start();
                  }
                  else
                  {
-                     if (speed > 5.0){
+                     if (speed >= 5.0){
 
                          //posting location model on the server
-                         timer=0;
-                         if(prefManager.getLocationF()!=null)
+                         ct.cancel();
+                         flag=1;
+                         if(p==1)
                          {
                                  sendLocation(locationModel);
+
                          }
                      }
                  }
@@ -174,19 +197,18 @@ public class LocationService extends Service implements
                          addNotification();
                          prefManager.setNotificationFlag("1");
                      }
-                     if(prefManager.getLocationF()!=null)
+                     if(p==1)
                      {
                          if(source==0){
-                             sendLocation(new LocationModel("-1","-1",speed+"","user",1));
+                             sendLocation(new LocationModel("-1","-1",speed+"","user",prefManager.getUserId()));
                              check=1;
+                             flag=1;
                              source++;
+                             Toast.makeText(getApplication(),"JourneyStarted",Toast.LENGTH_SHORT).show();
                          }
-                         else
-                             sendLocation(locationModel);
                      }
                  }
              }
-
              lStart = lEnd;
 
         }
@@ -201,7 +223,7 @@ public class LocationService extends Service implements
             public void onResponse(Call<LocationModel> call, Response<LocationModel> response) {
                 Log.e("In response : ", response.toString());
                 if(response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(),"Done posting",Toast.LENGTH_SHORT).show();
+
                 }
             }
 
@@ -218,7 +240,8 @@ public class LocationService extends Service implements
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_location_on_black_24dp)
                         .setContentTitle("Gps Tracker App")
-                        .setContentText("Are you travelling?");
+                        .setContentText("Are you travelling?")
+                        .setAutoCancel(true);
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
