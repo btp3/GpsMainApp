@@ -38,6 +38,7 @@
         <activity android:name=".Activities.MainActivity"></activity>
         <activity android:name=".Activities.SignUpActivity"></activity>
         <activity android:name=".Activities.NotificationActivity"></activity>
+        <activity android:name=".Activities.DriverActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

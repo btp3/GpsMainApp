@@ -24,6 +24,18 @@ public class VehicleLocationModel implements Serializable
     @SerializedName("speed")
     @Expose
     private String speed;
+    @SerializedName("type_id")
+    @Expose
+    private String type_id;
+
+    public String getType_id() {
+        return type_id;
+    }
+
+    public void setType_id(String type_id) {
+        this.type_id = type_id;
+    }
+
     @SerializedName("timestamp")
     @Expose
     private String timestamp;

@@ -1,6 +1,7 @@
 package com.developer.iron_man.gpsmain.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.developer.iron_man.gpsmain.Activities.DriverActivity;
 import com.developer.iron_man.gpsmain.Activities.MainActivity;
 import com.developer.iron_man.gpsmain.Others.HistoryRecycleGrid;
 import com.developer.iron_man.gpsmain.Others.PrefManager;
@@ -69,7 +71,7 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.history_layout,container,false);
 
-
+        dialog=new ProgressDialog(getActivity());
         recyclerView=(RecyclerView)view.findViewById(R.id.history_recycle_grid);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
@@ -79,6 +81,7 @@ public class HistoryFragment extends Fragment {
         prefManager=new PrefManager(getActivity());
         prefManager.setFragmentFlag(null);
         historyList.clear();
+        dialog = ProgressDialog.show(getActivity(),null,"Loading...", true);
         getCards(prefManager.getUsername());
 
         return view;
@@ -93,6 +96,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onResponse(Call<UserJourneyList> call, Response<UserJourneyList> response) {
 
+                dialog.dismiss();
                 String slash[]= new String[3];
                 String cord[] = new String[2];
                 String time[] =  new String[2];
@@ -128,10 +132,21 @@ public class HistoryFragment extends Fragment {
                                 String image=driver.getDphoto();
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 getImage(image).compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                historyList.add(new History(da,ti,"Auto",lic_plate,source,dest,stream));
+                                historyList.add(new History(da,ti,"Auto",lic_plate,source,dest,stream,driver));
                             }
                         }
-                        adapter=new HistoryRecycleGrid(getActivity(), historyList);
+                        adapter=new HistoryRecycleGrid(getActivity(), historyList, new HistoryRecycleGrid.VenueAdapterClickCallbacks() {
+                            @Override
+                            public void onCardClick(Driver driver) {
+
+                                Intent intent=new Intent(getActivity(), DriverActivity.class);
+                                Gson g=new Gson();
+                                String d=g.toJson(driver);
+                                prefManager.setDriver(d);
+                                startActivity(intent);
+
+                            }
+                        });
                         recyclerView.setAdapter(adapter);
                     }
                 }
@@ -140,6 +155,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onFailure(Call<UserJourneyList> call, Throwable t) {
 
+                dialog.dismiss();
                 Toast.makeText(getActivity(), "History failed", Toast.LENGTH_LONG).show();
 
             }

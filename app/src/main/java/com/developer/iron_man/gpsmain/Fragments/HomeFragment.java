@@ -31,7 +31,6 @@ public class HomeFragment extends Fragment {
     private ViewPager viewPager;
     TextView tabOne;
     TextView tabTwo;
-    TextView tabThree;
     TextView tabFour;
     ViewPagerAdapter adapter;
     PrefManager pref;
@@ -64,15 +63,10 @@ public class HomeFragment extends Fragment {
         tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_phone_android_green_24dp, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
-        tabThree = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
-        tabThree.setText("History");
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_speaker_notes_grey_24dp, 0, 0);
-        tabLayout.getTabAt(2).setCustomView(tabThree);
-
         tabFour = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
         tabFour.setText("Profile");
         tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_person_grey_24dp, 0, 0);
-        tabLayout.getTabAt(3).setCustomView(tabFour);
+        tabLayout.getTabAt(2).setCustomView(tabFour);
     }
 
     private void createViewPager(ViewPager viewPager) {
@@ -81,7 +75,6 @@ public class HomeFragment extends Fragment {
         adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new MapFragment(), "Map");
         adapter.addFrag(new QRScanFragment(), "QR Scanner");
-        adapter.addFrag(new HistoryFragment(), "History");
         adapter.addFrag(new ProfileFragment(), "Profile");
         viewPager.setAdapter(adapter);
     }

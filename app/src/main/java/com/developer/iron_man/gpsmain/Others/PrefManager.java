@@ -123,5 +123,26 @@ public class PrefManager {
         return pref.getString("id",null);
     }
 
+    public void setDriver(String driver)
+    {
+        editor.putString("driver", driver);
+        editor.commit();
+    }
+
+    public String getDriver(){
+        return pref.getString("driver",null);
+    }
+
+    public void setQRFlag(String qr)
+    {
+        editor.putString("qr", qr);
+        editor.commit();
+    }
+
+    public String getQRFlag(){
+        return pref.getString("qr",null);
+    }
+
+
 
 }

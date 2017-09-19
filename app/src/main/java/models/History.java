@@ -19,8 +19,9 @@ public class History {
     String source;
     String dest;
     ByteArrayOutputStream image;
+    Driver driver;
 
-    public History(String date, String time, String vehicle_type, String vehicle_num, String source, String dest,ByteArrayOutputStream image) {
+    public History(String date, String time, String vehicle_type, String vehicle_num, String source, String dest,ByteArrayOutputStream image,Driver driver) {
         this.date = date;
         this.time = time;
         this.vehicle_type = vehicle_type;
@@ -28,6 +29,7 @@ public class History {
         this.source = source;
         this.dest = dest;
         this.image=image;
+        this.driver=driver;
     }
 
     public String getDate() {
@@ -77,10 +79,19 @@ public class History {
     public ByteArrayOutputStream getImage() {
         return image;
     }
+
     public void setImage(ByteArrayOutputStream image) {
         this.image = image;
     }
     public void setDest(String dest) {
         this.dest = dest;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 }

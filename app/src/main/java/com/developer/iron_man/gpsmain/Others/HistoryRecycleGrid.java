@@ -26,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import models.Driver;
 import models.History;
 
 /**
@@ -37,6 +38,7 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
     public RecyclerView re;
     private List<History> dataSet ;
     public Context context=null;
+    VenueAdapterClickCallbacks venueAdapterClickCallbacks;
 
 
     public class MyHolder extends RecyclerView.ViewHolder
@@ -63,10 +65,11 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
         }
     }
 
-    public HistoryRecycleGrid(Context c, List<History> data)
+    public HistoryRecycleGrid(Context c, List<History> data,VenueAdapterClickCallbacks venueAdapterClickCallback)
     {
 
         this.dataSet = data;
+        this.venueAdapterClickCallbacks = venueAdapterClickCallback;
         context=c;
 
     }
@@ -107,12 +110,26 @@ public class HistoryRecycleGrid extends RecyclerView.Adapter<HistoryRecycleGrid.
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(driver_image);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                venueAdapterClickCallbacks.onCardClick(dataSet.get(position).getDriver());
+
+            }
+        });
+
+
+
         }
 
     @Override
     public int getItemCount() {
         return dataSet.size();
     }
+
+    public interface VenueAdapterClickCallbacks {
+        void onCardClick(Driver driver);}
 
 
 

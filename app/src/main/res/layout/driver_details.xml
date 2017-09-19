@@ -2,15 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorAccent">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar_driver"
+        android:background="@color/colorPrimary"
+        >
+
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#fff"
-        android:weightSum="100">
+        android:weightSum="100"
+        android:layout_below="@id/toolbar_driver">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -20,16 +29,15 @@
             <!-- Round image -->
 
             <ImageView
-                android:id="@+id/profile_image"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
+                android:id="@+id/photo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:src="@drawable/sagar"
                 android:layout_marginTop="5dp"
                 android:layout_gravity="center"
                 />
 
         </FrameLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,10 +61,10 @@
                 android:layout_gravity="center"
                 android:textColor="@color/black"
                 android:textSize="15sp"
-                android:id="@+id/state"/>
+                android:id="@+id/address"/>
 
             <com.developer.iron_man.gpsmain.Others.MyTextView
-                android:id="@+id/contact_number"
+                android:id="@+id/contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="7997676166"
@@ -66,7 +74,7 @@
                 android:layout_gravity="center"/>
 
             <com.developer.iron_man.gpsmain.Others.MyTextView
-                android:id="@+id/aadhar_number"
+                android:id="@+id/aadhar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Aadhar card : 1234 1234 1234"
@@ -74,7 +82,7 @@
                 android:layout_gravity="center"/>
 
             <com.developer.iron_man.gpsmain.Others.MyTextView
-                android:id="@+id/license_plate_number"
+                android:id="@+id/license"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -82,56 +90,7 @@
                 android:textSize="17sp"
                 android:layout_gravity="center"/>
 
-            <com.developer.iron_man.gpsmain.Others.MyTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Scanned Document url :"
-                android:textSize="17sp"
-                android:layout_gravity="center"/>
 
-            <com.developer.iron_man.gpsmain.Others.MyTextView
-                android:id="@+id/doc_url"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:text="http://btpmain.herokuapp.com/driver/url"
-                android:textSize="16sp"
-                android:layout_gravity="center"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="LETS GO"
-            android:textColor="@color/green"
-            android:textAlignment="center"
-            android:background="@drawable/rounded"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_marginTop="10dp"
-            android:padding="10dp" />
-        <TextView
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="PASS"
-            android:textStyle="bold"
-            android:textColor="@color/red"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:background="@drawable/rounded"
-            android:layout_marginTop="15dp"
-            android:padding="10dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#fff">
         </LinearLayout>
 
     </LinearLayout>

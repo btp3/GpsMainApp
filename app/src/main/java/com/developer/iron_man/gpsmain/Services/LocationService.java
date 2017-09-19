@@ -40,6 +40,7 @@ import retrofit2.Response;
 import static com.developer.iron_man.gpsmain.Activities.MainActivity.sp;
 import static com.developer.iron_man.gpsmain.Activities.MainActivity.t;
 import static com.developer.iron_man.gpsmain.Activities.NotificationActivity.p;
+import static com.developer.iron_man.gpsmain.Fragments.QRScanFragment.q;
 
 /**
  * Created by sagar on 21/8/17.
@@ -80,6 +81,7 @@ public class LocationService extends Service implements
             ct.cancel();
             check=0;
             p=0;
+            q=0;
         }
     };
     
@@ -174,12 +176,12 @@ public class LocationService extends Service implements
                  }
                  else
                  {
-                     if (speed >= 5.0){
+                     if (speed >= 10.0){
 
                          //posting location model on the server
                          ct.cancel();
                          flag=1;
-                         if(p==1)
+                         if(p==1||q==1)
                          {
                                  sendLocation(locationModel);
 
@@ -190,14 +192,14 @@ public class LocationService extends Service implements
              else
 
              {
-                 if (speed > 5.0){
+                 if (speed > 10.0){
 
                     if(prefManager.getNotificationFlag()==null)
                      {
                          addNotification();
                          prefManager.setNotificationFlag("1");
                      }
-                     if(p==1)
+                     if(p==1||q==1)
                      {
                          if(source==0){
                              sendLocation(new LocationModel("-1","-1",speed+"","user",prefManager.getUserId()));

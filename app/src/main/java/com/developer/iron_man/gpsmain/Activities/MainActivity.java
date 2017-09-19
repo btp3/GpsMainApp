@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,6 +22,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +34,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.developer.iron_man.gpsmain.Fragments.HistoryFragment;
 import com.developer.iron_man.gpsmain.Fragments.SettingsFragment;
 import com.developer.iron_man.gpsmain.Fragments.HomeFragment;
 import com.developer.iron_man.gpsmain.Others.CircleTrasform;
@@ -39,6 +44,9 @@ import com.developer.iron_man.gpsmain.R;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import models.ListVehicleLocations;
 import models.LocationModel;
@@ -71,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
-    private static final String TAG_RATE = "rate";
+    private static final String TAG_HISTORY = "history";
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_HOME;
 
@@ -87,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ProgressDialog dialog;
     public static TextView t,sp;
     GPSTracker gpsTracker;
+    FloatingActionButton fab;
 
 
     @Override
@@ -127,7 +136,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                sendSMS();
+            }
+        });
 
         // Navigation view header
         navHeader = navigationView.getHeaderView(0);
@@ -224,7 +240,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // just close the navigation drawer
         if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
             drawer.closeDrawers();
+            // show or hide the fab button
+            toggleFab();
             return;
+
         }
 
         // Sometimes, when fragment has huge data, screen seems hanging
@@ -249,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mHandler.post(mPendingRunnable);
         }
 
+        // show or hide the fab button
+        toggleFab();
+
         //Closing drawer on item click
         drawer.closeDrawers();
 
@@ -262,7 +284,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // home
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
-            case 2:
+            case 1:
+                //history
+                HistoryFragment historyFragment = new HistoryFragment();
+                return historyFragment;
+            case 3:
                 // settings fragment
                 SettingsFragment settingsFragment = new SettingsFragment();
                 return settingsFragment;
@@ -272,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setToolbarTitle() {
-        if(navItemIndex!=1)
+        if(navItemIndex!=2)
             getSupportActionBar().setTitle(activityTitles[navItemIndex]);
     }
 
@@ -296,8 +322,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         CURRENT_TAG = TAG_HOME;
                         break;
 
-                    case R.id.nav_rateUs:
+                    case R.id.nav_history:
                         navItemIndex = 1;
+                        CURRENT_TAG = TAG_HISTORY;
+                        break;
+
+                    case R.id.nav_rateUs:
+                        navItemIndex = 2;
                         //code for playStore
 
                         Uri uri = Uri.parse("market://details?id=" + getApplicationContext().getPackageName());
@@ -317,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
 
                     case R.id.nav_settings:
-                        navItemIndex = 2;
+                        navItemIndex = 3;
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_about_us:
@@ -554,5 +585,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
+    // show or hide the fab
+    private void toggleFab() {
+        if (navItemIndex == 0)
+            fab.show();
+        else
+            fab.hide();
+    }
+
+    public void sendSMS() {
+        try {
+            String num[]=pref.getEmegencyContact().split(";");
+            String location=getAddress(gpsTracker.getLocation().getLatitude(),gpsTracker.getLocation().getLongitude());
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage("+91"+num[0], null, "Hii,I am at "+location, null, null);
+            smsManager.sendTextMessage("+91"+num[1], null, "Hii,I am at "+location, null, null);
+            smsManager.sendTextMessage("+91"+num[2], null, "Hii,I am at "+location, null, null);
+            Toast.makeText(getApplicationContext(), "Message Sent",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(),ex.getMessage().toString(),
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    public String getAddress(double lat, double lng) {
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        String add="";
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+            add = " ";
+            add = add + obj.getAddressLine(0);
+            //add = add + "\n" + obj.getCountryName();
+            // add = add + "\n" + obj.getCountryCode();
+
+            // add = add + "\n" + obj.getPostalCode();
+            // add = add + "\n" + obj.getSubAdminArea();
+            add = add + ", " + obj.getLocality();
+            add = add + ", " + obj.getAdminArea();
+            // add = add + "\n" + obj.getSubThoroughfare();
+
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+
+        return add;
+    }
+
+
 }
 

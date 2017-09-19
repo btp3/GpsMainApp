@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 
 import com.developer.iron_man.gpsmain.Activities.MainActivity;
 import com.developer.iron_man.gpsmain.Others.GPSTracker;
@@ -43,6 +44,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
 import models.ListVehicleLocations;
 import models.VehicleLocationModel;
@@ -62,6 +65,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     List<VehicleLocationModel> lcoordinates;
     Marker marker;
     int flag=1;
+    List<Marker> markerList;
 
 
     @Nullable
@@ -70,6 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         view = inflater.inflate(R.layout.layout_map, container, false);
         pref=new PrefManager(getActivity());
         pref.setFragmentFlag("1");
+        markerList=new ArrayList<>();
         return view;
     }
 
@@ -154,7 +159,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             listVehicleLocations = gson.fromJson(m, ListVehicleLocations.class);
         }
         lcoordinates=listVehicleLocations.getLocation();
+        if(mMap!=null)
         mMap.clear();
+        markerList.clear();
         for(int i=0;i<lcoordinates.size();i++)
         {
             LatLng loc=new LatLng(Double.parseDouble(lcoordinates.get(i).getLatitude()),Double.parseDouble(lcoordinates.get(i).getLongitude()));
