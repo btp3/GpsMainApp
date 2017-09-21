@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.developer.iron_man.gpsmain.Activities.SignUpActivity;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
@@ -86,7 +87,8 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
                 // Send user details
                 Gson g = new Gson();
-                Log.e("Json data : ",g.toJson(u));
+                //Log.e("Json data : ", g.toJson(u));
+                dialog = ProgressDialog.show(CompleteProfileActivity.this,null,"Signing up...", true);
                 createUser(u);
             }
         });
@@ -123,15 +125,17 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
                 if(response.isSuccessful()) {
 
-                    Log.e("Response :",response.body().toString());
+                    dialog.dismiss();
                     Toast.makeText(getApplicationContext(),"Registration Successful",Toast.LENGTH_LONG).show();
+                    finish();
 
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.e("SendLocation : ", "Unable to submit post to API.");
+                dialog.dismiss();
+                Toast.makeText(getApplicationContext(),"Registration Failed",Toast.LENGTH_LONG).show();
             }
         });
     }

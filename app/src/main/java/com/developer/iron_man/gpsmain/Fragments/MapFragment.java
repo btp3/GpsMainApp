@@ -159,13 +159,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             listVehicleLocations = gson.fromJson(m, ListVehicleLocations.class);
         }
         lcoordinates=listVehicleLocations.getLocation();
-        if(mMap!=null)
-        mMap.clear();
-        markerList.clear();
-        for(int i=0;i<lcoordinates.size();i++)
-        {
-            LatLng loc=new LatLng(Double.parseDouble(lcoordinates.get(i).getLatitude()),Double.parseDouble(lcoordinates.get(i).getLongitude()));
-            marker=mMap.addMarker(new MarkerOptions().position(loc).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.selector_auto_image)));
+        if(mMap!=null) {
+            mMap.clear();
+            markerList.clear();
+            for (int i = 0; i < lcoordinates.size(); i++) {
+                LatLng loc = new LatLng(Double.parseDouble(lcoordinates.get(i).getLatitude()), Double.parseDouble(lcoordinates.get(i).getLongitude()));
+                marker = mMap.addMarker(new MarkerOptions().position(loc).icon(bitmapDescriptorFromVector(getActivity(), R.drawable.selector_auto_image)));
+            }
         }
     }
 
